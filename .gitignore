@@ -1,4 +1,7 @@
 #ignore result
 test-output
-#ignore class files
+#eclipse generated files
 target
+.classpath
+.project
+.settings
