@@ -1,0 +1,4 @@
+#ignore result
+test-output
+#ignore class files
+target

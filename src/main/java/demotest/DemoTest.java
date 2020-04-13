@@ -21,7 +21,7 @@ public class DemoTest implements ServiceHelper {
 	@Test
 	public void demo() {
 		HttpRequest httpRequest = new HttpRequest();
-		httpRequest.addBaseUrl("https://jsonplaceholder.typicode.com");
+//		httpRequest.addBaseUrl("https://jsonplaceholder.typicode.com");
 		httpRequest.addEndPoint("posts");
 		httpRequest.addMethod(HttpMethod.POST);
 		httpRequest.getBody();

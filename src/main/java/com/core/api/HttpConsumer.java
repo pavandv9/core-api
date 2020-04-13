@@ -43,17 +43,18 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	private HttpRequest httpRequest;
 
 	private HttpResponse processRequest(@NonNull HttpRequest httpRequest) {
+		loadConfigFileAndValidateRequest();
 		Logger.logRequest(httpRequest);
-		validateRequest();
 		CloseableHttpResponse closeableHttpResponse = null;
 		HttpResponse httpResponse = null;
 		try {
 			closeableHttpResponse = getDefaultClient().execute(getHttpUriRequest(httpRequest.getHttpMethod()));
+			httpResponse = new AbstractResponse(closeableHttpResponse);
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			Logger.logResponse(httpResponse);
 		}
-		httpResponse = new AbstractResponse(closeableHttpResponse);
-		Logger.logResponse(httpResponse);
 		return httpResponse;
 	}
 
@@ -82,7 +83,8 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return uri;
 	}
 
-	private void validateRequest() {
+	private void loadConfigFileAndValidateRequest() {
+		loadConfig();
 		try {
 			httpRequest.getHttpMethod().toString();
 		} catch (NullPointerException e) {
@@ -167,4 +169,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return httpUriRequest;
 	}
 
+	private void loadConfig() {
+		httpRequest.loadUrl();
+	}
 }

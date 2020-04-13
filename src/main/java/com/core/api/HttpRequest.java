@@ -8,7 +8,9 @@ import java.util.Map;
 
 import org.apache.http.HttpHeaders;
 
+import com.core.api.constants.ConfigFile;
 import com.core.api.constants.HttpMethod;
+import com.core.api.exception.HttpException;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -212,6 +214,16 @@ public class HttpRequest {
 		headers.put(name.toString(), value);
 		addHeader(headers);
 		return this;
+	}
+
+	public String loadUrl() {
+		if (baseUrl != null && baseUrl != "" && !baseUrl.isEmpty())
+			return baseUrl;
+		if (baseUrl == null)
+			baseUrl = ConfigManager.get(ConfigFile.BASE_URL);
+		if (baseUrl == null)
+			throw new HttpException("base_url is not set");
+		return baseUrl;
 	}
 
 }

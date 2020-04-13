@@ -14,7 +14,7 @@
 	<developers>
 		<developer>
 			<name>Pavan DV</name>
-			<email>pavandv01@gmail.com</email>
+			<email>pavandv9@gmail.com</email>
 		</developer>
 	</developers>
 
@@ -93,7 +93,6 @@
 			<artifactId>underscore</artifactId>
 			<version>${u.version}</version>
 		</dependency>
-
-
 	</dependencies>
+
 </project>
