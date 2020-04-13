@@ -1,0 +1,7 @@
+#ignore result
+test-output
+#eclipse generated files
+target
+.classpath
+.project
+.settings
