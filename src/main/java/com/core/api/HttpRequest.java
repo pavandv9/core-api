@@ -40,7 +40,7 @@ public class HttpRequest {
 	 * Get request endpoint
 	 */
 	@Getter
-	private Object endPoint;
+	private String endPoint;
 	/**
 	 * Get request httpMethod
 	 */
@@ -94,7 +94,7 @@ public class HttpRequest {
 	 * @param pathParams
 	 * @return
 	 */
-	public HttpRequest addPathParam(Map<String, Object> pathParams) {
+	public HttpRequest addPathParamValues(@NonNull Map<String, Object> pathParams) {
 		if (!pathParams.isEmpty() || null != pathParams) {
 			pathParams.forEach((name, value) -> this.pathParams.put(name, value));
 		}
@@ -102,16 +102,16 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Add path parameters to the HttpRequest
+	 * Add path parameters to the HttpRequest.
 	 * 
-	 * @param name
-	 * @param value
-	 * @return
+	 * @Description Add path parameter name given in end point enclosed by {}.
+	 * 
+	 * @param name  with or without {}
+	 * @param value of path parameter
+	 * @return HttpRequest object
 	 */
-	public HttpRequest addPathParam(@NonNull String name, Object value) {
-		Map<String, Object> pathParams = new HashMap<String, Object>();
-		pathParams.put(name, value);
-		addPathParam(pathParams);
+	public HttpRequest addPathParamValue(@NonNull String name, Object value) {
+		this.pathParams.put(name, value);
 		return this;
 	}
 
@@ -121,7 +121,7 @@ public class HttpRequest {
 	 * @param queryParams to the HttpRequest
 	 * @return
 	 */
-	public HttpRequest addQueryParam(@NonNull Map<String, Object> queryParams) {
+	public HttpRequest addQueryParams(@NonNull Map<String, Object> queryParams) {
 		if (!queryParams.isEmpty() || null != queryParams) {
 			queryParams.forEach((name, value) -> this.queryParams.put(name, value));
 		}
@@ -136,9 +136,7 @@ public class HttpRequest {
 	 * @return
 	 */
 	public HttpRequest addQueryParam(@NonNull String name, Object value) {
-		Map<String, Object> queryParams = new HashMap<String, Object>();
-		queryParams.put(name, value);
-		addQueryParam(queryParams);
+		this.queryParams.put(name, value);
 		return this;
 	}
 
@@ -165,12 +163,14 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Add end point to the HttpRequest
+	 * Add end point to the HttpRequest. Add path parameters in to if api request
+	 * has it, by enclosing in flower braces {pathParam}
 	 * 
 	 * @param endpoint
 	 * @return
+	 * @Example https://example.com/demo/{pathName}
 	 */
-	public HttpRequest addEndPoint(@NonNull Object endpoint) {
+	public HttpRequest addEndPoint(@NonNull String endpoint) {
 		this.endPoint = endpoint;
 		return this;
 	}
@@ -216,7 +216,7 @@ public class HttpRequest {
 		return this;
 	}
 
-	public String loadUrl() {
+	public String loadBaseUrl() {
 		if (baseUrl != null && baseUrl != "" && !baseUrl.isEmpty())
 			return baseUrl;
 		if (baseUrl == null)

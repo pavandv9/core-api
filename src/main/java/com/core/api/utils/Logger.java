@@ -16,6 +16,7 @@ import com.core.api.HttpRequest;
 import com.core.api.HttpResponse;
 import com.github.underscore.lodash.Json.JsonStringBuilder.Step;
 import com.github.underscore.lodash.U;
+import com.google.gson.Gson;
 
 import lombok.NonNull;
 
@@ -33,9 +34,9 @@ public class Logger implements ILogger {
 	public static void logRequest(HttpRequest httpRequest) {
 		Logger.httpRequest = httpRequest;
 		String prefix = NEW_LINE
-				+ "********************************************* Request *********************************************"
+				+ "********************************************* Request **********************************************"
 				+ NEW_LINE;
-		String suffix = "***************************************************************************************************";
+		String suffix = "****************************************************************************************************";
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format(FORMAT_TEXT, "Http Method", ":", httpRequest.getHttpMethod()));
 		builder.append(String.format(FORMAT_TEXT, "Base Url", ":", httpRequest.getBaseUrl()));
@@ -43,7 +44,8 @@ public class Logger implements ILogger {
 		builder.append(String.format(FORMAT_TEXT, "Path Params", ":", prettyMap(httpRequest.getPathParams())));
 		builder.append(String.format(FORMAT_TEXT, "Query Paramas", ":", prettyMap(httpRequest.getQueryParams())));
 		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(httpRequest.getHeaders())));
-		builder.append(String.format(FORMAT_TEXT, "Body", ":", NEW_LINE + prettyJsonBody(httpRequest.getBody())));
+		builder.append(String.format(FORMAT_TEXT, "Body", ":",
+				NEW_LINE + prettyJsonBody(getJsonFromObject(httpRequest.getBody()))));
 
 		String requestLog = prefix + builder.toString() + suffix;
 		LOG.info(requestLog);
@@ -54,7 +56,7 @@ public class Logger implements ILogger {
 		String prefix = NEW_LINE
 				+ "********************************************* Response *********************************************"
 				+ NEW_LINE;
-		String suffix = "***************************************************************************************************";
+		String suffix = "****************************************************************************************************";
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format(FORMAT_TEXT, "Status code", ":", response.getStatusLine().getStatusCode()));
 		builder.append(String.format(FORMAT_TEXT, "Status message", ":", response.getStatusLine().getStatusMessage()));
@@ -75,17 +77,6 @@ public class Logger implements ILogger {
 
 	private static String prettyXml(Object xml) {
 		return xml == null ? "<nil>" : U.formatXml(xml.toString());
-//		final StringWriter sw;
-//		try {
-//			final OutputFormat format = OutputFormat.createPrettyPrint();
-//			final org.dom4j.Document document = DocumentHelper.parseText(xml);
-//			sw = new StringWriter();
-//			final XMLWriter writer = new XMLWriter(sw, format);
-//			writer.write(document);
-//		} catch (Exception e) {
-//			throw new RuntimeException("Error pretty printing xml:\n" + xml, e);
-//		}
-//		return sw.toString();
 	}
 
 	private static String prettyMap(Map<String, Object> map) {
@@ -101,7 +92,7 @@ public class Logger implements ILogger {
 				sb.append(',').append(' ');
 			}
 		}
-		return sb.toString().isEmpty() ? "<nil>" : sb.toString();
+		return sb.toString().isEmpty() ? "<nil>" : sb.toString().replace("{", "").replace("}", "");
 	}
 
 	private static StringBuilder appendBody(StringBuilder builder, HttpResponse response) {
@@ -127,5 +118,10 @@ public class Logger implements ILogger {
 		} else
 			builder.append(String.format(FORMAT_TEXT, "Response body", ":", NEW_LINE + response.getBody()));
 		return builder;
+	}
+
+	private static String getJsonFromObject(Object src) {
+		String json = new Gson().toJson(src);
+		return json != null ? json : "<nil>";
 	}
 }

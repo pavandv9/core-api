@@ -42,6 +42,12 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
 	private HttpRequest httpRequest;
 
+	/**
+	 * Process HttpRequest
+	 * 
+	 * @param httpRequest
+	 * @return
+	 */
 	private HttpResponse processRequest(@NonNull HttpRequest httpRequest) {
 		loadConfigFileAndValidateRequest();
 		Logger.logRequest(httpRequest);
@@ -69,6 +75,11 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return processRequest(httpRequest);
 	}
 
+	/**
+	 * Get URI by building url, path parameters and query parameters.
+	 * 
+	 * @return
+	 */
 	private URI URI() {
 		URI uri = null;
 		try {
@@ -83,6 +94,9 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return uri;
 	}
 
+	/**
+	 * Load config file and vlidate request.
+	 */
 	private void loadConfigFileAndValidateRequest() {
 		loadConfig();
 		try {
@@ -92,15 +106,26 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		}
 	}
 
+	/**
+	 * Build path parameter to url
+	 * 
+	 * @return
+	 */
 	private String buildPathParams() {
-		String pathParams = "";
+		String endPointWithPathPrams = httpRequest.getEndPoint();
 		for (Entry<String, Object> pathParam : httpRequest.getPathParams().entrySet()) {
-			pathParams = pathParams + String.format("/%1$s/%2$s", pathParam.getKey(), pathParam.getValue());
+			String key = pathParam.getKey().replace("{", "").replace("}", "");
+			endPointWithPathPrams = endPointWithPathPrams.replace("{" + key + "}", pathParam.getValue().toString());
 		}
-		String url = String.format("%1$s/%2$s%3$s", httpRequest.getBaseUrl(), httpRequest.getEndPoint(), pathParams);
+		String url = String.format("%1$s%2$s", httpRequest.getBaseUrl(), endPointWithPathPrams);
 		return url;
 	}
 
+	/**
+	 * Set default headers and get CloseableHttpClient.
+	 * 
+	 * @return CloseableHttpClient
+	 */
 	private CloseableHttpClient getDefaultClient() {
 		CloseableHttpClient client = HttpClients.createDefault();
 		HashSet<Header> defaultHeaders = new HashSet<Header>();
@@ -113,6 +138,11 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return client;
 	}
 
+	/**
+	 * Set headers to the request.
+	 * 
+	 * @param httpUriRequest
+	 */
 	private void setHeaders(HttpUriRequest httpUriRequest) {
 		for (Entry<String, Object> entry : httpRequest.getHeaders().entrySet())
 			httpUriRequest.setHeader(entry.getKey(), entry.getValue().toString());
@@ -170,6 +200,23 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	}
 
 	private void loadConfig() {
-		httpRequest.loadUrl();
+		httpRequest.loadBaseUrl();
+		alignRequest();
+	}
+
+	private void alignRequest() {
+		if (httpRequest.getBaseUrl().endsWith("/") && httpRequest.getEndPoint().startsWith("/")) {
+			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
+			httpRequest.addEndPoint(httpRequest.getEndPoint().substring(1));
+		} else if (httpRequest.getBaseUrl().endsWith("/") && !httpRequest.getEndPoint().startsWith("/")) {
+			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
+			httpRequest.addEndPoint(httpRequest.getEndPoint());
+		} else if (!httpRequest.getBaseUrl().endsWith("/") && httpRequest.getEndPoint().startsWith("/")) {
+			httpRequest.addBaseUrl(httpRequest.getBaseUrl() + "/");
+			httpRequest.addEndPoint(httpRequest.getEndPoint().substring(1));
+		} else {
+			httpRequest.addBaseUrl(httpRequest.getBaseUrl() + "/");
+			httpRequest.addEndPoint(httpRequest.getEndPoint());
+		}
 	}
 }
