@@ -4,12 +4,14 @@
 package com.core.api;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -21,15 +23,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
+import org.testng.ITestListener;
 
+import com.core.api.constants.ConfigFile;
 import com.core.api.constants.HttpMethod;
 import com.core.api.constants.IHeaders;
 import com.core.api.exception.HttpException;
 import com.core.api.utils.ILogger;
+import com.core.api.utils.JavaUtil;
 import com.core.api.utils.Logger;
 
 import lombok.NonNull;
@@ -38,7 +44,7 @@ import lombok.NonNull;
  * @author Pavan.DV
  *
  */
-public class HttpConsumer implements HttpClient, ILogger, IHeaders {
+public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListener {
 
 	private HttpRequest httpRequest;
 
@@ -113,11 +119,14 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 */
 	private String buildPathParams() {
 		String endPointWithPathPrams = httpRequest.getEndPoint();
-		for (Entry<String, Object> pathParam : httpRequest.getPathParams().entrySet()) {
-			String key = pathParam.getKey().replace("{", "").replace("}", "");
-			endPointWithPathPrams = endPointWithPathPrams.replace("{" + key + "}", pathParam.getValue().toString());
+		String url = httpRequest.getBaseUrl();
+		if (endPointWithPathPrams != null) {
+			for (Entry<String, Object> pathParam : httpRequest.getPathParams().entrySet()) {
+				String key = pathParam.getKey().replace("{", "").replace("}", "");
+				endPointWithPathPrams = endPointWithPathPrams.replace("{" + key + "}", pathParam.getValue().toString());
+			}
+			url = String.format("%1$s%2$s", httpRequest.getBaseUrl(), endPointWithPathPrams);
 		}
-		String url = String.format("%1$s%2$s", httpRequest.getBaseUrl(), endPointWithPathPrams);
 		return url;
 	}
 
@@ -132,6 +141,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		defaultHeaders.add(new BasicHeader(HttpHeaders.PRAGMA, "no-cache"));
 		defaultHeaders.add(new BasicHeader(HttpHeaders.CACHE_CONTROL, "no-cache"));
 		defaultHeaders.add(new BasicHeader(ACCEPT, APPLICATION_JSON));
+		defaultHeaders.add(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON));
 		HttpClientBuilder clientBuilder = HttpClients.custom().setDefaultHeaders(defaultHeaders).disableAuthCaching()
 				.disableContentCompression();
 		clientBuilder.build();
@@ -160,6 +170,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		case POST:
 			HttpPost httpPost = new HttpPost();
 			httpPost.setURI(URI());
+			httpPost.setEntity(getHttpEntityBody());
 			setHeaders(httpPost);
 			httpUriRequest = httpPost;
 			break;
@@ -167,7 +178,15 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 			HttpPut httpPut = new HttpPut();
 			httpPut.setURI(URI());
 			setHeaders(httpPut);
+			httpPut.setEntity(getHttpEntityBody());
 			httpUriRequest = httpPut;
+			break;
+		case PATCH:
+			HttpPatch httpPatch = new HttpPatch();
+			httpPatch.setURI(URI());
+			setHeaders(httpPatch);
+			httpPatch.setEntity(getHttpEntityBody());
+			httpUriRequest = httpPatch;
 			break;
 		case DELETE:
 			HttpDelete httpDelete = new HttpDelete();
@@ -187,12 +206,6 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 			setHeaders(httpHead);
 			httpUriRequest = httpHead;
 			break;
-		case PATCH:
-			HttpPatch httpPatch = new HttpPatch();
-			httpPatch.setURI(URI());
-			setHeaders(httpPatch);
-			httpUriRequest = httpPatch;
-			break;
 		default:
 			break;
 		}
@@ -200,12 +213,30 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	}
 
 	private void loadConfig() {
-		httpRequest.loadBaseUrl();
-		alignRequest();
+		configBaseUrl();
+		formatUrlAndEndPoint();
+		loadHeaders();
 	}
 
-	private void alignRequest() {
-		if (httpRequest.getBaseUrl().endsWith("/") && httpRequest.getEndPoint().startsWith("/")) {
+	private void configBaseUrl() {
+		String baseUrl = httpRequest.getBaseUrl();
+		if (baseUrl == null || baseUrl.isEmpty()) {
+			try {
+				baseUrl = ConfigManager.get(ConfigFile.BASE_URL);
+				httpRequest.addBaseUrl(baseUrl);
+			} catch (ExceptionInInitializerError e) {
+			}
+		}
+		if (httpRequest.getBaseUrl() == null || baseUrl.isEmpty())
+			throw new HttpException("base_url is not set");
+		if (baseUrl.contains("{") || baseUrl.contains("}"))
+			throw new HttpException("base_url is not valid");
+	}
+
+	private void formatUrlAndEndPoint() {
+		if (httpRequest.getEndPoint() == null || httpRequest.getEndPoint().isEmpty()) {
+			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
+		} else if (httpRequest.getBaseUrl().endsWith("/") && httpRequest.getEndPoint().startsWith("/")) {
 			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
 			httpRequest.addEndPoint(httpRequest.getEndPoint().substring(1));
 		} else if (httpRequest.getBaseUrl().endsWith("/") && !httpRequest.getEndPoint().startsWith("/")) {
@@ -218,5 +249,22 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 			httpRequest.addBaseUrl(httpRequest.getBaseUrl() + "/");
 			httpRequest.addEndPoint(httpRequest.getEndPoint());
 		}
+	}
+
+	private void loadHeaders() {
+		if (httpRequest.getHeaders().isEmpty()) {
+			httpRequest.addHeader(CONTENT_TYPE, APPLICATION_JSON);
+			httpRequest.addHeader(ACCEPT, APPLICATION_JSON);
+		}
+	}
+
+	private HttpEntity getHttpEntityBody() {
+		HttpEntity entity = null;
+		try {
+			entity = new StringEntity(JavaUtil.toJson(httpRequest.getBody()));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return entity;
 	}
 }

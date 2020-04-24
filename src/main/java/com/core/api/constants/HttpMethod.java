@@ -9,5 +9,5 @@ package com.core.api.constants;
  */
 public enum HttpMethod {
 
-	GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, COPY, LINK, UNLINK, PURGE, LOCK, UNLOCK, VIEW, PROPFIND;
+	GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD;
 }

@@ -8,9 +8,7 @@ import java.util.Map;
 
 import org.apache.http.HttpHeaders;
 
-import com.core.api.constants.ConfigFile;
 import com.core.api.constants.HttpMethod;
-import com.core.api.exception.HttpException;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -108,6 +106,8 @@ public class HttpRequest {
 	 * 
 	 * @param name  with or without {}
 	 * @param value of path parameter
+	 * @example addPathParamValue("{pathParamName}", pathParamValue) Or <br>
+	 *          addPathParamValue("pathParamName", pathParamValue)
 	 * @return HttpRequest object
 	 */
 	public HttpRequest addPathParamValue(@NonNull String name, Object value) {
@@ -131,8 +131,8 @@ public class HttpRequest {
 	/**
 	 * Add query parameters to the HttpRequest
 	 * 
-	 * @param name
-	 * @param value
+	 * @param name  of the query parameter
+	 * @param value of the query parameter
 	 * @return
 	 */
 	public HttpRequest addQueryParam(@NonNull String name, Object value) {
@@ -163,12 +163,13 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Add end point to the HttpRequest. Add path parameters in to if api request
-	 * has it, by enclosing in flower braces {pathParam}
+	 * Add end point to the HttpRequest. <br>
+	 * Add path parameters to end point if api request has it, by enclosing in
+	 * flower braces {pathParam}
 	 * 
 	 * @param endpoint
 	 * @return
-	 * @Example https://example.com/demo/{pathName}
+	 * @example https://example.com/demo/{pathName}
 	 */
 	public HttpRequest addEndPoint(@NonNull String endpoint) {
 		this.endPoint = endpoint;
@@ -215,15 +216,4 @@ public class HttpRequest {
 		addHeader(headers);
 		return this;
 	}
-
-	public String loadBaseUrl() {
-		if (baseUrl != null && baseUrl != "" && !baseUrl.isEmpty())
-			return baseUrl;
-		if (baseUrl == null)
-			baseUrl = ConfigManager.get(ConfigFile.BASE_URL);
-		if (baseUrl == null)
-			throw new HttpException("base_url is not set");
-		return baseUrl;
-	}
-
 }

@@ -8,6 +8,7 @@ import com.core.api.HttpResponse;
 import com.core.api.ServiceHelper;
 import com.core.api.constants.HttpMethod;
 
+import io.qameta.allure.Step;
 import lombok.Data;
 
 /**
@@ -16,41 +17,46 @@ import lombok.Data;
  */
 public class SampleServiceHelper implements ServiceHelper {
 
-	public HttpResponse getApi_usingQueryParam() {
+	@Step("Get api using query param")
+	public HttpResponse getApi_usingQueryParam(int postId) {
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.addBaseUrl("https://jsonplaceholder.typicode.com/").addEndPoint("comments")
-				.addMethod(HttpMethod.GET).addQueryParam("postId", 1);
+				.addMethod(HttpMethod.GET).addQueryParam("postId", postId);
 		return getHttpClient().execute(httpRequest);
 	}
 
-	public HttpResponse getApi_usingPathParam() {
+	@Step("Get api using path param")
+	public HttpResponse getApi_usingPathParam(int postId) {
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.addBaseUrl("https://jsonplaceholder.typicode.com/").addEndPoint("posts/{postId}")
-				.addMethod(HttpMethod.GET).addPathParamValue("postId", 1);
+				.addMethod(HttpMethod.GET).addPathParamValue("postId", postId);
 		return getHttpClient().execute(httpRequest);
 	}
 
-	public HttpResponse postApi() {
+	@Step("Post api")
+	public HttpResponse postApi(int userId, String title) {
 		HttpRequest httpRequest = new HttpRequest();
-		httpRequest.addBaseUrl("https://jsonplaceholder.typicode.com/");
-		httpRequest.addEndPoint("posts");
+		httpRequest.addBaseUrl("https://reqres.in/api/users/");
 		httpRequest.addMethod(HttpMethod.POST);
 
 		MyRequestModel requestModel = new MyRequestModel();
-		requestModel.setBody("test body");
-		requestModel.setId(101);
-		requestModel.setName("test name");
-		requestModel.setUserId(1);
+		requestModel.setUserId(userId);
+		requestModel.setTitle(title);
+		requestModel.setId(1);
+		requestModel.setBody("body");
+
 		httpRequest.addBody(requestModel);
 		return getHttpClient().execute(httpRequest);
 	}
 
-	@Data
-	public class MyRequestModel {
+}
 
-		private int id;
-		private String name;
-		private String body;
-		private int userId;
-	}
+@Data
+class MyRequestModel {
+
+	private int userId;
+	private int id;
+	private String title;
+	private String body;
+
 }

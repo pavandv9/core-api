@@ -72,24 +72,4 @@ public abstract class HttpResponse implements ILogger {
 		}
 		return value;
 	}
-
-//	@Ignore
-//	private String readJSONFile(String jsonPath) {
-//		String response = getBody().toString();
-//		JSONObject jsonObject = new JSONObject(response);
-//		Object obj = jsonObject;
-//		for (String s : jsonPath.split("/"))
-//			if (!s.isEmpty())
-//				if (!(s.contains("[") || s.contains("]")))
-//					try {
-//						obj = ((JSONObject) obj).get(s);
-//					} catch (ClassCastException e) {
-//						throw new HttpException("JsonPath [\"" + jsonPath + "\"] not found");
-//					}
-//				else if (s.contains("[") || s.contains("]"))
-//					obj = (((JSONArray) ((JSONObject) obj).get(s.split("\\[")[0]))
-//							.get(Integer.parseInt(s.split("\\[")[1].replace("]", ""))));
-//		return obj.toString();
-//	}
-
 }
