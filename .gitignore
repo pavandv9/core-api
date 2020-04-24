@@ -1,5 +1,5 @@
 #ignore result
-test-output
+*test-output
 #eclipse generated files
 target
 .classpath
