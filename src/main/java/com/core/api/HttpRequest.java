@@ -216,4 +216,28 @@ public class HttpRequest {
 		addHeader(headers);
 		return this;
 	}
+
+	public HttpRequest addContentType(@NonNull String value) {
+		addHeader("ContentType", value);
+		return this;
+	}
+
+	public HttpRequest addAuthorization(@NonNull String value) {
+		addHeader("Authorization", value);
+		return this;
+	}
+
+	/**
+	 * Get content type
+	 */
+	public String getContentType() {
+		return RequestUtil.getContentType(headers);
+	}
+
+	/**
+	 * Get authorization
+	 */
+	public String getAuthorization() {
+		return RequestUtil.getAuthorization(headers);
+	}
 }

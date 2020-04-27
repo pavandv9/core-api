@@ -54,7 +54,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListene
 	 * @param httpRequest
 	 * @return
 	 */
-	private HttpResponse processRequest(@NonNull HttpRequest httpRequest) {
+	private HttpResponse processRequest() {
 		loadConfigFileAndValidateRequest();
 		Logger.logRequest(httpRequest);
 		CloseableHttpResponse closeableHttpResponse = null;
@@ -62,10 +62,10 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListene
 		try {
 			closeableHttpResponse = getDefaultClient().execute(getHttpUriRequest(httpRequest.getHttpMethod()));
 			httpResponse = new AbstractResponse(closeableHttpResponse);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
 			Logger.logResponse(httpResponse);
+		} catch (IOException e) {
+			LOG.error(e.getMessage());
+			e.printStackTrace();
 		}
 		return httpResponse;
 	}
@@ -78,7 +78,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListene
 	@Override
 	public HttpResponse execute(@NonNull HttpRequest httpRequest) {
 		this.httpRequest = httpRequest;
-		return processRequest(httpRequest);
+		return processRequest();
 	}
 
 	/**
@@ -213,13 +213,14 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListene
 	}
 
 	private void loadConfig() {
-		configBaseUrl();
+		loadConfigProperties();
 		formatUrlAndEndPoint();
 		loadHeaders();
 	}
 
-	private void configBaseUrl() {
+	private void loadConfigProperties() {
 		String baseUrl = httpRequest.getBaseUrl();
+		String authorization = httpRequest.getAuthorization();
 		if (baseUrl == null || baseUrl.isEmpty()) {
 			try {
 				baseUrl = ConfigManager.get(ConfigFile.BASE_URL);
@@ -231,6 +232,14 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListene
 			throw new HttpException("base_url is not set");
 		if (baseUrl.contains("{") || baseUrl.contains("}"))
 			throw new HttpException("base_url is not valid");
+		if (authorization == null || authorization.isEmpty()) {
+			try {
+				authorization = ConfigManager.get(ConfigFile.AUTHORIZATION);
+				if (authorization != null && !authorization.isEmpty())
+					httpRequest.addAuthorization(authorization);
+			} catch (ExceptionInInitializerError e) {
+			}
+		}
 	}
 
 	private void formatUrlAndEndPoint() {
@@ -253,6 +262,10 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListene
 
 	private void loadHeaders() {
 		if (httpRequest.getHeaders().isEmpty()) {
+			httpRequest.addHeader(CONTENT_TYPE, APPLICATION_JSON);
+			httpRequest.addHeader(ACCEPT, APPLICATION_JSON);
+		}
+		if (httpRequest.getContentType() == null || httpRequest.getContentType().isEmpty()) {
 			httpRequest.addHeader(CONTENT_TYPE, APPLICATION_JSON);
 			httpRequest.addHeader(ACCEPT, APPLICATION_JSON);
 		}
