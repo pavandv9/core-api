@@ -36,6 +36,8 @@ public final class AbstractResponse extends HttpResponse {
 	protected void setStatusLine() {
 		this.statusLine = new StatusLine(this.response.getStatusLine().getStatusCode(),
 				this.response.getStatusLine().getReasonPhrase());
+		this.statusCode = response.getStatusLine().getStatusCode();
+		this.statusMessage = response.getStatusLine().getReasonPhrase();
 	}
 
 	/**

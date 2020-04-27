@@ -24,6 +24,18 @@ import lombok.ToString;
 public abstract class HttpResponse implements ILogger {
 
 	/**
+	 * Get status code of response
+	 */
+	@Getter
+	protected int statusCode;
+
+	/**
+	 * Get status message of response
+	 */
+	@Getter
+	protected String statusMessage;
+
+	/**
 	 * Get status line
 	 */
 	@Getter

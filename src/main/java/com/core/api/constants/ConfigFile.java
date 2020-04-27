@@ -9,7 +9,8 @@ package com.core.api.constants;
  */
 public enum ConfigFile implements IConfig {
 
-	BASE_URL("base_url"), AUTH_TOKEN("auth_token"), USERNAME("user_name"), PASSWORD("passsword");
+	BASE_URL("base_url"), AUTH_TOKEN("auth_token"), USERNAME("user_name"), PASSWORD("passsword"),
+	AUTHORIZATION("authorization");
 
 	private String value;
 
