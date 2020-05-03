@@ -31,6 +31,7 @@ public class SampleTest {
 	public void testGetApi_usingPathParam() {
 		HttpResponse httpResponse = serviceHelper.getApi_usingPathParam(1);
 		Assert.assertEquals(httpResponse.getStatusLine().getStatusCode(), 200, "Status code fail");
+		Assert.assertEquals(httpResponse.parse("id"), "1");
 	}
 
 	@Test(priority = 2, description = "Testing get api query param")

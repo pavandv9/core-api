@@ -19,13 +19,16 @@ import lombok.NonNull;
  */
 public class PropertyUtil {
 
+	static Properties properties;
+
 	public static Properties readProperty(@NonNull File file) {
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream(file));
 		} catch (IOException e) {
-			throw new HttpException("Unable load properties");
+			throw new HttpException("Unable load property file");
 		}
+		properties = prop;
 		return prop;
 	}
 
@@ -40,4 +43,17 @@ public class PropertyUtil {
 	public File getFile(IConfig configFileName) {
 		return new File(getClass().getClassLoader().getResource(configFileName.getValue()).getFile());
 	}
+
+	public File getFile(String configFileName) {
+		return new File(getClass().getClassLoader().getResource(configFileName).getFile());
+	}
+
+	public static String get(String key) {
+		return properties.get(key).toString();
+	}
+
+	public static String get(IConfig key) {
+		return properties.get(key.getValue()).toString();
+	}
+
 }

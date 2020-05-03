@@ -34,6 +34,7 @@
 		<jsonpath.version>2.4.0</jsonpath.version>
 		<u.version>1.54</u.version>
 		<aspectj.version>1.8.10</aspectj.version>
+		<springboot.mail.version>2.2.6.RELEASE</springboot.mail.version>
 	</properties>
 
 	<dependencies>
@@ -93,6 +94,17 @@
 			<groupId>com.github.javadev</groupId>
 			<artifactId>underscore</artifactId>
 			<version>${u.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+			<version>${springboot.mail.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>

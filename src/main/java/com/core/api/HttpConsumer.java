@@ -28,7 +28,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.testng.ITestListener;
 
 import com.core.api.constants.ConfigFile;
 import com.core.api.constants.HttpMethod;
@@ -44,7 +43,7 @@ import lombok.NonNull;
  * @author Pavan.DV
  *
  */
-public class HttpConsumer implements HttpClient, ILogger, IHeaders, ITestListener {
+public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
 	private HttpRequest httpRequest;
 
