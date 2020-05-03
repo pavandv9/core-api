@@ -9,7 +9,8 @@ package com.core.api.constants;
  */
 public enum PropertyFile implements IConfig {
 
-	CONFIG_FILE("config.properties");
+	CONFIG_FILE("config.properties"),
+	MAIL_FILE("mail.properties");
 
 	private String value;
 
