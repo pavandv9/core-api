@@ -47,6 +47,10 @@ public class MailListner implements ITestListener {
 		skippedtests.add(result.getMethod());
 	}
 
+	@Override
+	public void onStart(ITestContext context) {
+	}
+
 	private int getTotalTestCase() {
 		return passedtests.size() + failedtests.size() + skippedtests.size();
 	}
