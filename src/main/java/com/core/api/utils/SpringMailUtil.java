@@ -48,7 +48,7 @@ public class SpringMailUtil implements ILogger {
 		try {
 			file = new File(filePath);
 			if (file.createNewFile()) {
-				Properties props = PropertyUtil.loadProperties(PropertyFile.MAIL_FILE);
+				Properties props = PropertyUtil.loadProperties(filePath);
 				properties = props;
 				setDefaultProps();
 				properties.store(new FileOutputStream(filePath), null);
