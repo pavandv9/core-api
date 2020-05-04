@@ -51,6 +51,18 @@ public class MailListner implements ITestListener {
 	public void onStart(ITestContext context) {
 	}
 
+	@Override
+	public void onTestStart(ITestResult result) {
+	}
+
+	@Override
+	public void onTestFailedWithTimeout(ITestResult result) {
+	}
+
+	@Override
+	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+	}
+
 	private int getTotalTestCase() {
 		return passedtests.size() + failedtests.size() + skippedtests.size();
 	}
