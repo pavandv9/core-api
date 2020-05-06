@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.springframework.mail.javamail.JavaMailSender;
 
+import com.core.api.config.EmailConfig;
 import com.core.api.constants.MailFile;
 import com.core.api.constants.PropertyFile;
 
@@ -61,7 +62,7 @@ public class SpringMailUtil implements ILogger {
 	private static void setDefaultProps() {
 		properties.put(MailFile.SEND_MAIL.getValue(), "false");
 		properties.put(MailFile.HOST.getValue(), "gmail/outlook/office365");
-		properties.put(MailFile.USERNAME.getValue(), "");
+		properties.put(MailFile.FROM.getValue(), "");
 		properties.put(MailFile.PASSWORD.getValue(), "");
 		properties.put(MailFile.TO.getValue(), "");
 		properties.put(MailFile.CC.getValue(), "");
