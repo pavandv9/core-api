@@ -7,6 +7,7 @@ import com.core.api.exception.HttpException;
 import com.github.underscore.lodash.Json.JsonStringBuilder.Step;
 import com.github.underscore.lodash.U;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import lombok.NonNull;
 
@@ -24,7 +25,7 @@ public class JavaUtil {
 			if (isValidJson(object))
 				json = object.toString();
 			else
-				json = new Gson().toJson(object);
+				json = new GsonBuilder().serializeNulls().create().toJson(object);
 		}
 		return json;
 	}

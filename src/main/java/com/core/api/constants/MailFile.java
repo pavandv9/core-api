@@ -9,8 +9,8 @@ package com.core.api.constants;
  */
 public enum MailFile implements IConfig {
 
-	SEND_MAIL("send_mail"), HOST("host"), USERNAME("username"), PASSWORD("password"), TO("to"), CC("cc"),
-	SUB("subject"), TEXT("text");
+	SEND_MAIL("send_mail"), HOST("host"), FROM("from"), PASSWORD("password"), TO("to"), CC("cc"), SUB("subject"),
+	TEXT("text");
 
 	private String value;
 

@@ -18,6 +18,8 @@ import com.core.api.constants.DefProperty;
 import com.core.api.constants.MailFile;
 import com.core.api.constants.PropertyFile;
 
+import io.qameta.allure.Allure;
+
 /**
  * @author Pavan.DV
  *
@@ -47,6 +49,7 @@ public class Logger implements ILogger {
 		String requestLog = prefix + builder.toString() + suffix;
 		LOG.info(requestLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
+		Allure.addAttachment("Request", builder.toString());
 	}
 
 	public static void logResponse(HttpResponse response) {
@@ -62,6 +65,7 @@ public class Logger implements ILogger {
 		String responseLog = prefix + builder.toString() + suffix;
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
+		Allure.addAttachment("Response", builder.toString());
 	}
 
 	private static String prettyMap(Map<String, Object> map) {
@@ -127,7 +131,7 @@ public class Logger implements ILogger {
 				"To send mail fill the data in mail.properties available in src/main/resources, if not available refresh the folder. \nStill not visible create it in same folder and add below data to it");
 		builder.append(NEW_LINE + MailFile.SEND_MAIL.getValue() + "=true/false");
 		builder.append(NEW_LINE + MailFile.HOST.getValue() + "=gmail/outlook/office365");
-		builder.append(NEW_LINE + MailFile.USERNAME.getValue());
+		builder.append(NEW_LINE + MailFile.FROM.getValue());
 		builder.append(NEW_LINE + MailFile.PASSWORD.getValue());
 		builder.append(NEW_LINE + MailFile.TO.getValue());
 		builder.append(NEW_LINE + MailFile.CC.getValue());
@@ -147,7 +151,7 @@ public class Logger implements ILogger {
 		builder.append("Sending mail to below details..." + NEW_LINE);
 		PropertyUtil.loadProperties(PropertyFile.MAIL_FILE);
 		builder.append(String.format(FORMAT_TEXT, "Host", ":", PropertyUtil.get(MailFile.HOST)));
-		builder.append(String.format(FORMAT_TEXT, "Username", ":", PropertyUtil.get(MailFile.USERNAME)));
+		builder.append(String.format(FORMAT_TEXT, "Username", ":", PropertyUtil.get(MailFile.FROM)));
 		builder.append(String.format(FORMAT_TEXT, "To", ":", PropertyUtil.get(MailFile.TO)));
 		builder.append(String.format(FORMAT_TEXT, "Cc", ":", PropertyUtil.get(MailFile.CC)));
 		builder.append(String.format(FORMAT_TEXT, "Subject", ":",

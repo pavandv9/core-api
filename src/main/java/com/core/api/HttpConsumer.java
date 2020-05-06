@@ -55,6 +55,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 */
 	private HttpResponse processRequest() {
 		loadConfigFileAndValidateRequest();
+		httpRequest.getBody();
 		Logger.logRequest(httpRequest);
 		CloseableHttpResponse closeableHttpResponse = null;
 		HttpResponse httpResponse = null;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.core.api.utils;
+package com.core.api.config;
 
 import java.util.Properties;
 
@@ -15,15 +15,17 @@ import com.core.api.constants.DefProperty;
 import com.core.api.constants.MailFile;
 import com.core.api.constants.PropertyFile;
 import com.core.api.exception.MailException;
+import com.core.api.utils.ILogger;
+import com.core.api.utils.PropertyUtil;
 
 /**
  * @author Pavan.DV
  *
  */
 @Configuration
-class EmailConfig implements ILogger {
+public class EmailConfig implements ILogger {
 
-	EmailConfig() {
+	public EmailConfig() {
 		PropertyUtil.loadProperties(PropertyFile.MAIL_FILE);
 	}
 
@@ -35,7 +37,7 @@ class EmailConfig implements ILogger {
 			mailSender.setHost("smtp.gmail.com");
 			break;
 		case "outlook":
-			mailSender.setHost("smtp.outlook.com");
+			mailSender.setHost("smtp-mail.outlook.com");
 			break;
 		case "office365":
 			mailSender.setHost("smtp.office365.com");
@@ -45,7 +47,7 @@ class EmailConfig implements ILogger {
 			throw new MailException("invalid host");
 		}
 		mailSender.setPort(587);
-		String user = PropertyUtil.get(MailFile.USERNAME);
+		String user = PropertyUtil.get(MailFile.FROM);
 		if (user.length() == 0) {
 			LOG.error("enter valid username in mail.properties");
 			throw new MailException("invalid username");
@@ -77,7 +79,7 @@ class EmailConfig implements ILogger {
 		String cc = PropertyUtil.get(MailFile.CC);
 		if (cc.length() == 0)
 			message.setCc(cc.length() != 0 ? splitEmailId(cc) : null);
-		message.setFrom(PropertyUtil.get(MailFile.USERNAME));
+		message.setFrom(PropertyUtil.get(MailFile.FROM));
 		message.setSubject(
 				!PropertyUtil.get(MailFile.SUB).isEmpty() ? PropertyUtil.get(MailFile.SUB) : DefProperty.SUB);
 		message.setText(!PropertyUtil.get(MailFile.TEXT).isEmpty() ? PropertyUtil.get(MailFile.TEXT)
