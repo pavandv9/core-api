@@ -7,14 +7,14 @@ package com.core.api.constants;
  * @author Pavan.DV
  *
  */
-public enum ConfigFile implements IConfig {
+public enum ConfigProperty implements IConfig {
 
-	BASE_URL("base_url"), AUTH_TOKEN("auth_token"), USERNAME("user_name"), PASSWORD("passsword"),
+	ENV("env"), BASE_URL("base_url"), AUTH_TOKEN("auth_token"), USERNAME("user_name"), PASSWORD("passsword"),
 	AUTHORIZATION("authorization");
 
 	private String value;
 
-	ConfigFile(String value) {
+	ConfigProperty(String value) {
 		this.value = value;
 	}
 

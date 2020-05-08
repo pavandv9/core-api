@@ -15,8 +15,8 @@ import org.testng.Reporter;
 import com.core.api.HttpRequest;
 import com.core.api.HttpResponse;
 import com.core.api.constants.DefProperty;
-import com.core.api.constants.MailFile;
-import com.core.api.constants.PropertyFile;
+import com.core.api.constants.MailProperty;
+import com.core.api.constants.ResourceFile;
 
 import io.qameta.allure.Allure;
 
@@ -27,16 +27,16 @@ import io.qameta.allure.Allure;
 public class Logger implements ILogger {
 
 	private static HttpRequest httpRequest;
-	private static String NEW_LINE = System.lineSeparator();
+	static String NEW_LINE = System.lineSeparator();
 	private static String FORMAT = "%1$-15s%2$-20s%3$-50s";
 	private static String FORMAT_TEXT = FORMAT + NEW_LINE;
+	static String suffix = "****************************************************************************************************";
 
 	public static void logRequest(HttpRequest httpRequest) {
 		Logger.httpRequest = httpRequest;
 		String prefix = NEW_LINE
 				+ "********************************************* Request **********************************************"
 				+ NEW_LINE;
-		String suffix = "****************************************************************************************************";
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format(FORMAT_TEXT, "Http Method", ":", httpRequest.getHttpMethod()));
 		builder.append(String.format(FORMAT_TEXT, "Base Url", ":", httpRequest.getBaseUrl()));
@@ -129,14 +129,14 @@ public class Logger implements ILogger {
 		StringBuilder builder = new StringBuilder();
 		builder.append(
 				"To send mail fill the data in mail.properties available in src/main/resources, if not available refresh the folder. \nStill not visible create it in same folder and add below data to it");
-		builder.append(NEW_LINE + MailFile.SEND_MAIL.getValue() + "=true/false");
-		builder.append(NEW_LINE + MailFile.HOST.getValue() + "=gmail/outlook/office365");
-		builder.append(NEW_LINE + MailFile.FROM.getValue());
-		builder.append(NEW_LINE + MailFile.PASSWORD.getValue());
-		builder.append(NEW_LINE + MailFile.TO.getValue());
-		builder.append(NEW_LINE + MailFile.CC.getValue());
-		builder.append(NEW_LINE + MailFile.SUB.getValue());
-		builder.append(NEW_LINE + MailFile.TEXT.getValue());
+		builder.append(NEW_LINE + MailProperty.SEND_MAIL.getValue() + "=true/false");
+		builder.append(NEW_LINE + MailProperty.HOST.getValue() + "=gmail/outlook/office365");
+		builder.append(NEW_LINE + MailProperty.FROM.getValue());
+		builder.append(NEW_LINE + MailProperty.PASSWORD.getValue());
+		builder.append(NEW_LINE + MailProperty.TO.getValue());
+		builder.append(NEW_LINE + MailProperty.CC.getValue());
+		builder.append(NEW_LINE + MailProperty.SUB.getValue());
+		builder.append(NEW_LINE + MailProperty.TEXT.getValue());
 		String mailProps = prefix + builder.toString() + suffix;
 		LOG.info(mailProps);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
@@ -149,15 +149,16 @@ public class Logger implements ILogger {
 		String suffix = "****************************************************************************************************";
 		StringBuilder builder = new StringBuilder();
 		builder.append("Sending mail to below details..." + NEW_LINE);
-		PropertyUtil.loadProperties(PropertyFile.MAIL_FILE);
-		builder.append(String.format(FORMAT_TEXT, "Host", ":", PropertyUtil.get(MailFile.HOST)));
-		builder.append(String.format(FORMAT_TEXT, "Username", ":", PropertyUtil.get(MailFile.FROM)));
-		builder.append(String.format(FORMAT_TEXT, "To", ":", PropertyUtil.get(MailFile.TO)));
-		builder.append(String.format(FORMAT_TEXT, "Cc", ":", PropertyUtil.get(MailFile.CC)));
+		PropertyUtil.loadProperties(ResourceFile.MAIL_FILE);
+		builder.append(String.format(FORMAT_TEXT, "Host", ":", PropertyUtil.get(MailProperty.HOST)));
+		builder.append(String.format(FORMAT_TEXT, "Username", ":", PropertyUtil.get(MailProperty.FROM)));
+		builder.append(String.format(FORMAT_TEXT, "To", ":", PropertyUtil.get(MailProperty.TO)));
+		builder.append(String.format(FORMAT_TEXT, "Cc", ":", PropertyUtil.get(MailProperty.CC)));
 		builder.append(String.format(FORMAT_TEXT, "Subject", ":",
-				!PropertyUtil.get(MailFile.SUB).isEmpty() ? PropertyUtil.get(MailFile.SUB) : DefProperty.SUB));
+				!PropertyUtil.get(MailProperty.SUB).isEmpty() ? PropertyUtil.get(MailProperty.SUB) : DefProperty.SUB));
 		builder.append(String.format(FORMAT_TEXT, "Text", ":",
-				!PropertyUtil.get(MailFile.TEXT).isEmpty() ? PropertyUtil.get(MailFile.TEXT) : DefProperty.TEXT));
+				!PropertyUtil.get(MailProperty.TEXT).isEmpty() ? PropertyUtil.get(MailProperty.TEXT)
+						: DefProperty.TEXT));
 		String mailProps = prefix + builder.toString() + suffix;
 		LOG.info(mailProps);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);

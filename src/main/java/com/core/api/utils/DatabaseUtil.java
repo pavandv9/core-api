@@ -19,30 +19,44 @@ import com.mysql.cj.exceptions.CJCommunicationsException;
  */
 public class DatabaseUtil implements ILogger {
 
-	public static void execute(String sqlQuery) {
-		DataSourceConfig dataSourceConfig = new DataSourceConfig();
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourceConfig.getDataSource());
-		List<Map<String, Object>> result = null;
-		try {
-			result = jdbcTemplate.queryForList(sqlQuery);
-		} catch (BadSqlGrammarException e) {
-			System.out.println("-------------------" + e.getLocalizedMessage());
-			throw new DatabaseException(e);
-		} catch (CJCommunicationsException e) {
-			System.out.println("================================" + e.getLocalizedMessage());
-		} catch (Exception e) {
-			System.out.println("*******************************************************************************");
-			System.err.println("exception occured " + e.getLocalizedMessage());
-			System.err.println("exception occured " + e.getMessage());
-			System.out.println("*******************************************************************************");
-			e.printStackTrace();
-		}
-		for (int i = 0; i < result.size(); i++) {
-			System.out.println(result.get(i));
-		}
+	static String system = "";
+
+	public static void setSystem(String system) {
+		DatabaseUtil.system = system;
 	}
 
-	public static void main(String[] args) {
-		execute("select * from dummyModel");
+	/**
+	 * Execute sql query. Set system before calling this method.
+	 * 
+	 * @param sqlQuery
+	 * @return
+	 */
+	public static List<Map<String, Object>> execute(String sqlQuery) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before calling execute method");
+			throw new DatabaseException("Database system not found");
+		}
+		return execute(sqlQuery, system);
+	}
+
+	public static List<Map<String, Object>> execute(String sqlQuery, String system) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
+		List<Map<String, Object>> result = null;
+		try {
+			LOG.info("Connecting to database: " + system);
+			result = jdbcTemplate.queryForList(sqlQuery);
+			LOG.info("Executed sql query successfully");
+			LOG.info(Logger.NEW_LINE + Logger.suffix);
+		} catch (BadSqlGrammarException e) {
+			LOG.error(e.getLocalizedMessage());
+			throw new DatabaseException(e.getLocalizedMessage());
+		} catch (CJCommunicationsException e) {
+			LOG.error(e.getLocalizedMessage());
+			throw new DatabaseException("Database connection failed. " + e.getLocalizedMessage());
+		} catch (Exception e) {
+			LOG.error(e.getLocalizedMessage());
+			throw new DatabaseException("Unable to connect to database");
+		}
+		return result;
 	}
 }

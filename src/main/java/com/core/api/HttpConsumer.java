@@ -29,13 +29,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
-import com.core.api.constants.ConfigFile;
+import com.core.api.constants.ConfigProperty;
 import com.core.api.constants.HttpMethod;
 import com.core.api.constants.IHeaders;
 import com.core.api.exception.HttpException;
 import com.core.api.utils.ILogger;
 import com.core.api.utils.JavaUtil;
 import com.core.api.utils.Logger;
+import com.core.api.utils.PropertyUtil;
 
 import lombok.NonNull;
 
@@ -219,11 +220,14 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	}
 
 	private void loadConfigProperties() {
+		String env = ConfigManager.get(ConfigProperty.ENV);
+		PropertyUtil.loadProperties(String.format("%1$s%2$s%3$s", "src/main/resources/env-file/", env, ".properties"));
 		String baseUrl = httpRequest.getBaseUrl();
 		String authorization = httpRequest.getAuthorization();
 		if (baseUrl == null || baseUrl.isEmpty()) {
 			try {
-				baseUrl = ConfigManager.get(ConfigFile.BASE_URL);
+
+				baseUrl = PropertyUtil.get(ConfigProperty.BASE_URL);
 				httpRequest.addBaseUrl(baseUrl);
 			} catch (ExceptionInInitializerError e) {
 			}
@@ -234,10 +238,10 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 			throw new HttpException("base_url is not valid");
 		if (authorization == null || authorization.isEmpty()) {
 			try {
-				authorization = ConfigManager.get(ConfigFile.AUTHORIZATION);
+				authorization = PropertyUtil.get(ConfigProperty.AUTHORIZATION);
 				if (authorization != null && !authorization.isEmpty())
 					httpRequest.addAuthorization(authorization);
-			} catch (ExceptionInInitializerError e) {
+			} catch (ExceptionInInitializerError | NullPointerException e) {
 			}
 		}
 	}

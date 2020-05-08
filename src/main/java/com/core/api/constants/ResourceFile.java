@@ -7,14 +7,13 @@ package com.core.api.constants;
  * @author Pavan.DV
  *
  */
-public enum PropertyFile implements IConfig {
+public enum ResourceFile implements IConfig {
 
-	CONFIG_FILE("config.properties"),
-	MAIL_FILE("mail.properties");
+	CONFIG_FILE("config.properties"), MAIL_FILE("mail.properties"), DB_FILE("db.json");
 
 	private String value;
 
-	PropertyFile(String value) {
+	ResourceFile(String value) {
 		this.value = value;
 	}
 
