@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.core.api.constants.IConfig;
-import com.core.api.constants.PropertyFile;
+import com.core.api.constants.ResourceFile;
 import com.core.api.utils.PropertyUtil;
 
 import lombok.NonNull;
@@ -24,7 +24,7 @@ public class ConfigManager {
 	 * Loading property file.
 	 */
 	static {
-		props = PropertyUtil.loadProperties(PropertyFile.CONFIG_FILE);
+		props = PropertyUtil.loadProperties(ResourceFile.CONFIG_FILE);
 	}
 
 	/**

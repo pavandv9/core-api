@@ -12,8 +12,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.core.api.constants.DefProperty;
-import com.core.api.constants.MailFile;
-import com.core.api.constants.PropertyFile;
+import com.core.api.constants.MailProperty;
+import com.core.api.constants.ResourceFile;
 import com.core.api.exception.MailException;
 import com.core.api.utils.ILogger;
 import com.core.api.utils.PropertyUtil;
@@ -26,13 +26,13 @@ import com.core.api.utils.PropertyUtil;
 public class EmailConfig implements ILogger {
 
 	public EmailConfig() {
-		PropertyUtil.loadProperties(PropertyFile.MAIL_FILE);
+		PropertyUtil.loadProperties(ResourceFile.MAIL_FILE);
 	}
 
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		switch (PropertyUtil.get(MailFile.HOST).toLowerCase()) {
+		switch (PropertyUtil.get(MailProperty.HOST).toLowerCase()) {
 		case "gmail":
 			mailSender.setHost("smtp.gmail.com");
 			break;
@@ -47,13 +47,13 @@ public class EmailConfig implements ILogger {
 			throw new MailException("invalid host");
 		}
 		mailSender.setPort(587);
-		String user = PropertyUtil.get(MailFile.FROM);
+		String user = PropertyUtil.get(MailProperty.FROM);
 		if (user.length() == 0) {
 			LOG.error("enter valid username in mail.properties");
 			throw new MailException("invalid username");
 		}
 		mailSender.setUsername(user);
-		String password = PropertyUtil.get(MailFile.PASSWORD);
+		String password = PropertyUtil.get(MailProperty.PASSWORD);
 		if (password.length() == 0) {
 			LOG.error("enter valid password in mail.properties");
 			throw new MailException("enter valid password");
@@ -72,17 +72,17 @@ public class EmailConfig implements ILogger {
 	@Bean
 	public SimpleMailMessage emailTemplate(StringBuilder testcases) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		String to = PropertyUtil.get(MailFile.TO);
+		String to = PropertyUtil.get(MailProperty.TO);
 		if (to.length() == 0)
 			throw new MailException("enter valid 'to' address(comma seperated values for multiple emails)");
 		message.setTo(splitEmailId(to));
-		String cc = PropertyUtil.get(MailFile.CC);
+		String cc = PropertyUtil.get(MailProperty.CC);
 		if (cc.length() == 0)
 			message.setCc(cc.length() != 0 ? splitEmailId(cc) : null);
-		message.setFrom(PropertyUtil.get(MailFile.FROM));
+		message.setFrom(PropertyUtil.get(MailProperty.FROM));
 		message.setSubject(
-				!PropertyUtil.get(MailFile.SUB).isEmpty() ? PropertyUtil.get(MailFile.SUB) : DefProperty.SUB);
-		message.setText(!PropertyUtil.get(MailFile.TEXT).isEmpty() ? PropertyUtil.get(MailFile.TEXT)
+				!PropertyUtil.get(MailProperty.SUB).isEmpty() ? PropertyUtil.get(MailProperty.SUB) : DefProperty.SUB);
+		message.setText(!PropertyUtil.get(MailProperty.TEXT).isEmpty() ? PropertyUtil.get(MailProperty.TEXT)
 				: DefProperty.TEXT + "\n\n" + testcases);
 		return message;
 	}

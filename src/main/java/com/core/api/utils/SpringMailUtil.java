@@ -11,8 +11,8 @@ import java.util.Properties;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import com.core.api.config.EmailConfig;
-import com.core.api.constants.MailFile;
-import com.core.api.constants.PropertyFile;
+import com.core.api.constants.MailProperty;
+import com.core.api.constants.ResourceFile;
 
 /**
  * @author Pavan.DV
@@ -25,13 +25,14 @@ public class SpringMailUtil implements ILogger {
 	public static void sendMail(StringBuilder testcases) {
 		createFileIfNotExist();
 		PropertyUtil.loadProperties(
-				System.getProperty("user.dir") + "/src/main/resources/" + PropertyFile.MAIL_FILE.getValue());
-		if (PropertyUtil.get(MailFile.SEND_MAIL).toLowerCase().equalsIgnoreCase("true")) {
+				System.getProperty("user.dir") + "/src/main/resources/" + ResourceFile.MAIL_FILE.getValue());
+		String sendMail = PropertyUtil.get(MailProperty.SEND_MAIL).toLowerCase();
+		if (sendMail.equalsIgnoreCase("true")) {
 			EmailConfig emailConfig = new EmailConfig();
 			JavaMailSender mailSender = emailConfig.getJavaMailSender();
 			mailSender.send(emailConfig.emailTemplate(testcases));
 			Logger.logMailRequest();
-		} else {
+		} else if (sendMail.equalsIgnoreCase("false")) {
 			Logger.logMailProperties();
 		}
 	}
@@ -44,7 +45,7 @@ public class SpringMailUtil implements ILogger {
 	 * @throws IOException
 	 */
 	private static void createFileIfNotExist() {
-		String filePath = System.getProperty("user.dir") + "/src/main/resources/" + PropertyFile.MAIL_FILE.getValue();
+		String filePath = System.getProperty("user.dir") + "/src/main/resources/" + ResourceFile.MAIL_FILE.getValue();
 		File file;
 		try {
 			file = new File(filePath);
@@ -60,13 +61,13 @@ public class SpringMailUtil implements ILogger {
 	}
 
 	private static void setDefaultProps() {
-		properties.put(MailFile.SEND_MAIL.getValue(), "false");
-		properties.put(MailFile.HOST.getValue(), "gmail/outlook/office365");
-		properties.put(MailFile.FROM.getValue(), "");
-		properties.put(MailFile.PASSWORD.getValue(), "");
-		properties.put(MailFile.TO.getValue(), "");
-		properties.put(MailFile.CC.getValue(), "");
-		properties.put(MailFile.SUB.getValue(), "");
-		properties.put(MailFile.TEXT.getValue(), "");
+		properties.put(MailProperty.SEND_MAIL.getValue(), "false");
+		properties.put(MailProperty.HOST.getValue(), "gmail/outlook/office365");
+		properties.put(MailProperty.FROM.getValue(), "");
+		properties.put(MailProperty.PASSWORD.getValue(), "");
+		properties.put(MailProperty.TO.getValue(), "");
+		properties.put(MailProperty.CC.getValue(), "");
+		properties.put(MailProperty.SUB.getValue(), "");
+		properties.put(MailProperty.TEXT.getValue(), "");
 	}
 }

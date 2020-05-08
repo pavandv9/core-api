@@ -21,7 +21,7 @@ public class PropertyUtil {
 
 	static Properties properties;
 
-	public static Properties readProperty(@NonNull File file) {
+	public static Properties loadProperties(@NonNull File file) {
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream(file));
@@ -33,18 +33,18 @@ public class PropertyUtil {
 	}
 
 	public static Properties loadProperties(@NonNull String fileName) {
-		return readProperty(new File(fileName));
+		return loadProperties(new File(fileName));
 	}
 
 	public static Properties loadProperties(@NonNull IConfig fileName) {
-		return readProperty(new PropertyUtil().getFile(fileName));
+		return loadProperties(new PropertyUtil().getResourceFile(fileName));
 	}
 
-	public File getFile(IConfig configFileName) {
+	public File getResourceFile(IConfig configFileName) {
 		return new File(getClass().getClassLoader().getResource(configFileName.getValue()).getFile());
 	}
 
-	public File getFile(String configFileName) {
+	public File getResourceFile(String configFileName) {
 		return new File(getClass().getClassLoader().getResource(configFileName).getFile());
 	}
 
