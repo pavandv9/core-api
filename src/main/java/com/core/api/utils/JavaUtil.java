@@ -4,9 +4,9 @@
 package com.core.api.utils;
 
 import com.core.api.exception.HttpException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.underscore.lodash.Json.JsonStringBuilder.Step;
 import com.github.underscore.lodash.U;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import lombok.NonNull;
@@ -22,7 +22,7 @@ public class JavaUtil {
 		if (null == object) {
 			return null;
 		} else {
-			if (isValidJson(object))
+			if (isJsonValid(object))
 				json = object.toString();
 			else
 				json = new GsonBuilder().serializeNulls().create().toJson(object);
@@ -51,10 +51,9 @@ public class JavaUtil {
 		return xml == null ? "<nil>" : U.formatXml(xml.toString());
 	}
 
-	public static boolean isValidJson(Object json) {
-		Gson gson = new Gson();
+	public static boolean isJsonValid(Object object) {
 		try {
-			gson.fromJson(json.toString(), Object.class);
+			new ObjectMapper().readTree(object.toString());
 			return true;
 		} catch (Exception e) {
 			return false;
