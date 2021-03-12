@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -220,13 +221,22 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	}
 
 	private void loadConfigProperties() {
-		String env = ConfigManager.get(ConfigProperty.ENV);
-		PropertyUtil.loadProperties(String.format("%1$s%2$s%3$s", "src/main/resources/env-file/", env, ".properties"));
+		String env = "";
+		try {
+			env = ConfigManager.get(ConfigProperty.ENV);
+		} catch (ExceptionInInitializerError e) {
+			LOG.warn("config.properties not found, use it for better performance");
+		}
+		try {
+			PropertyUtil
+					.loadProperties(String.format("%1$s%2$s%3$s", "src/main/resources/env-file/", env, ".properties"));
+		} catch (HttpException e) {
+			LOG.warn(env + ".properties not found, use it for better performance");
+		}
 		String baseUrl = httpRequest.getBaseUrl();
 		String authorization = httpRequest.getAuthorization();
 		if (baseUrl == null || baseUrl.isEmpty()) {
 			try {
-
 				baseUrl = PropertyUtil.get(ConfigProperty.BASE_URL);
 				httpRequest.addBaseUrl(baseUrl);
 			} catch (ExceptionInInitializerError e) {
