@@ -16,9 +16,10 @@ import lombok.NonNull;
 /**
  * @author Pavan.DV
  *
- * @apiNote HttpRequest which forms the request. Pass HttpRequest object to the
- *          execute method which is available in getHttpClient of ServiceHelper
- *          interface.
+ *         <p>
+ *         <b>apiNote</b> HttpRequest which forms the request. Pass HttpRequest
+ *         object to the execute method which is available in getHttpClient of
+ *         ServiceHelper interface.
  */
 public class HttpRequest {
 
@@ -64,7 +65,7 @@ public class HttpRequest {
 	 * Add base url to the HttpRequest
 	 * 
 	 * @param url
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addBaseUrl(@NonNull String url) {
 		if (!url.isEmpty() || null != url) {
@@ -77,7 +78,7 @@ public class HttpRequest {
 	 * Add base url to the HttpRequest
 	 * 
 	 * @param url
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addBaseUrl(@NonNull Object url) {
 		if (!url.toString().isEmpty() || null != url) {
@@ -90,7 +91,7 @@ public class HttpRequest {
 	 * Add path parameters to the HttpRequest
 	 * 
 	 * @param pathParams
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addPathParamValues(@NonNull Map<String, Object> pathParams) {
 		if (!pathParams.isEmpty() || null != pathParams) {
@@ -102,13 +103,16 @@ public class HttpRequest {
 	/**
 	 * Add path parameters to the HttpRequest.
 	 * 
-	 * @Description Add path parameter name given in end point enclosed by {}.
+	 * <p>
+	 * <b>Description</b> Add path parameter name given in end point enclosed by {}.
 	 * 
 	 * @param name  with or without {}
 	 * @param value of path parameter
-	 * @example addPathParamValue("{pathParamName}", pathParamValue) Or <br>
-	 *          addPathParamValue("pathParamName", pathParamValue)
-	 * @return HttpRequest object
+	 *              <p>
+	 *              <b>example</b> addPathParamValue("{pathParamName}",
+	 *              pathParamValue) Or <br>
+	 *              addPathParamValue("pathParamName", pathParamValue)
+	 * @return this
 	 */
 	public HttpRequest addPathParamValue(@NonNull String name, Object value) {
 		this.pathParams.put(name, value);
@@ -119,7 +123,7 @@ public class HttpRequest {
 	 * Add query parameters
 	 * 
 	 * @param queryParams to the HttpRequest
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addQueryParams(@NonNull Map<String, Object> queryParams) {
 		if (!queryParams.isEmpty() || null != queryParams) {
@@ -133,7 +137,7 @@ public class HttpRequest {
 	 * 
 	 * @param name  of the query parameter
 	 * @param value of the query parameter
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addQueryParam(@NonNull String name, Object value) {
 		this.queryParams.put(name, value);
@@ -144,7 +148,7 @@ public class HttpRequest {
 	 * Add body to the HttpRequest
 	 * 
 	 * @param body
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addBody(@NonNull Object body) {
 		this.body = body;
@@ -155,7 +159,7 @@ public class HttpRequest {
 	 * Add HttpMethod to the HttpRequest
 	 * 
 	 * @param httpMethod
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addMethod(@NonNull HttpMethod httpMethod) {
 		this.httpMethod = httpMethod;
@@ -168,8 +172,9 @@ public class HttpRequest {
 	 * flower braces {pathParam}
 	 * 
 	 * @param endpoint
-	 * @return
-	 * @example https://example.com/demo/{pathName}
+	 * @return this
+	 *         <p>
+	 *         <b>example</b> https://example.com/demo/{pathName}
 	 */
 	public HttpRequest addEndPoint(@NonNull String endpoint) {
 		this.endPoint = endpoint;
@@ -180,7 +185,7 @@ public class HttpRequest {
 	 * Add headers to the HttpRequest
 	 * 
 	 * @param headers
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addHeader(@NonNull Map<String, Object> headers) {
 		if (!headers.isEmpty() || null != headers) {
@@ -194,7 +199,7 @@ public class HttpRequest {
 	 * 
 	 * @param name
 	 * @param value
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addHeader(@NonNull String name, Object value) {
 		Map<String, Object> headers = new HashMap<String, Object>();
@@ -208,7 +213,7 @@ public class HttpRequest {
 	 * 
 	 * @param name
 	 * @param value
-	 * @return
+	 * @return this
 	 */
 	public HttpRequest addHeader(@NonNull HttpHeaders name, Object value) {
 		Map<String, Object> headers = new HashMap<String, Object>();
