@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>dv</groupId>
+	<groupId>com.github.pavandv9</groupId>
 	<artifactId>core-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>core-api</name>
@@ -30,7 +30,7 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/pavandv9/core-apio.git</connection>
+		<connection>scm:git:git://github.com/pavandv9/core-api.git</connection>
 		<developerConnection>scm:git:ssh://github.com:pavandv9/core-api.git</developerConnection>
 		<url>https://github.com/pavandv9/core-api</url>
 	</scm>
