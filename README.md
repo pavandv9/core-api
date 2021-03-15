@@ -19,7 +19,7 @@ API Framework is developed using HttpClients for api handliing, SpringFramework 
 	* Now click on the “Specify Location” button and locate the eclipse.exe path under eclipse installation folder like this.
 	* Now we need to finally install this by clicking the “Install/Update” button and we should finished installing lombok in eclipse
 	* Quit and relaunch the IDE(eclipse) then build the project.
-	Reference link: [Mac](https://nawaman.net/blog/2017-11-05), [Windows/Ubuntu](https://howtodoinjava.com/automation/lombok-eclipse-installation-examples/)
+	Reference link: [Mac](https://nawaman.net/blog/2017-11-05), [Windows/Ubuntu](https://howtodoinjava.com/automation/lombok-eclipse-installation-examples/).
 ***
 
 ## Usage:
