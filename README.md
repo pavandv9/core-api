@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.pavandv9/core-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.pavandv9/core-api)
+
 # core-api
 ### API Automation Framework
 API Framework is developed using HttpClients for api handliing, SpringFramework for Database connection and sending Mail.
