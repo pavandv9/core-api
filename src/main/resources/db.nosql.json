@@ -1,0 +1,14 @@
+[
+	{
+		"prod": {
+			"user": {
+				"datbase_type": "mongo",
+				"host": "localhost",
+				"database": "myDb",
+				"port": "27017",
+				"username": "sampleuser",
+				"password": "password"
+			}
+		}
+	}
+]

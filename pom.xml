@@ -59,6 +59,7 @@
 		<json.simple.version>1.1.1</json.simple.version>
 		<jackson.databind.version>2.12.1</jackson.databind.version>
 		<oracle.database.version>11.2.0.4</oracle.database.version>
+		<mongo.driver.version>3.12.8</mongo.driver.version>
 	</properties>
 
 	<dependencies>
@@ -148,6 +149,12 @@
 			<artifactId>ojdbc6</artifactId>
 			<version>${oracle.database.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongo.driver.version}</version>
+		</dependency>
+
 
 
 	</dependencies>

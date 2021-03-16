@@ -3,14 +3,22 @@
  */
 package com.core.api.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.core.api.config.DataSourceConfig;
+import com.core.api.config.NoSqlConfig;
 import com.core.api.exception.DatabaseException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mysql.cj.exceptions.CJCommunicationsException;
 
 /**
@@ -21,6 +29,19 @@ public class DatabaseUtil implements ILogger {
 
 	String system = "";
 	JdbcTemplate jdbcTemplate = null;
+	MongoDatabase mongoDatabase;
+
+	public DatabaseUtil() {
+	}
+
+	/**
+	 * Set system
+	 * 
+	 * @param system
+	 */
+	public DatabaseUtil(String system) {
+		this.system = system;
+	}
 
 	public void setSystem(String system) {
 		this.system = system;
@@ -85,7 +106,59 @@ public class DatabaseUtil implements ILogger {
 			LOG.warn("Set system before executing update query");
 			throw new DatabaseException("Database system not found");
 		}
-		execute(sqlQuery, system);
+		update(sqlQuery, system);
+	}
+
+	/**
+	 * Insert data to the database.
+	 * 
+	 * @param sqlQuery
+	 */
+	public void insert(String sqlQuery) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before executing update query");
+			throw new DatabaseException("Database system not found");
+		}
+		update(sqlQuery, system);
+	}
+
+	/**
+	 * Insert data to the database.
+	 * 
+	 * @param sqlQuery
+	 */
+	public void insert(String sqlQuery, String system) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before executing update query");
+			throw new DatabaseException("Database system not found");
+		}
+		update(sqlQuery, system);
+	}
+
+	/**
+	 * Delete data from the database.
+	 * 
+	 * @param sqlQuery
+	 */
+	public void delete(String sqlQuery) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before executing update query");
+			throw new DatabaseException("Database system not found");
+		}
+		update(sqlQuery, system);
+	}
+
+	/**
+	 * Delete data from the database.
+	 * 
+	 * @param sqlQuery
+	 */
+	public void delete(String sqlQuery, String system) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before executing update query");
+			throw new DatabaseException("Database system not found");
+		}
+		update(sqlQuery, system);
 	}
 
 	/**
@@ -94,7 +167,7 @@ public class DatabaseUtil implements ILogger {
 	 * @param sqlQuery
 	 * @param system
 	 */
-	public static void update(String sqlQuery, String system) {
+	public void update(String sqlQuery, String system) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
 		try {
 			LOG.info("Connecting to database: " + system);
@@ -111,5 +184,47 @@ public class DatabaseUtil implements ILogger {
 			LOG.error(e.getLocalizedMessage());
 			throw new DatabaseException("Unable to connect to database");
 		}
+	}
+
+	public List<JSONObject> getDataFromMongo(String collection, String searchKey, String searchValue) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before getting collection");
+			throw new DatabaseException("Database system not found");
+		}
+		return getDataFromMongo(system, collection, searchKey, searchValue);
+	}
+
+	public List<JSONObject> getDataFromMongo(String system, String collection, String searchKey, String searchValue) {
+		if (mongoDatabase == null || !system.equals(this.system)) {
+			LOG.info("Connecting to mongo database: " + system);
+			try {
+				mongoDatabase = new NoSqlConfig().getMongoConnection(system);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to connect to mongo database");
+			}
+			try {
+				FindIterable<Document> filerableDocument = mongoDatabase.getCollection(collection)
+						.find(new Document(searchKey, searchValue));
+				MongoCursor<Document> mongoCursor = filerableDocument.iterator();
+				List<JSONObject> document = new ArrayList<JSONObject>();
+				while (mongoCursor.hasNext())
+					document.add(new JSONObject(mongoCursor.next().toJson()));
+				LOG.info("Executed mongo query successfully: " + document);
+				LOG.info(Logger.NEW_LINE + Logger.suffix);
+				return document;
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to retrive the data");
+			}
+		}
+		return null;
+	}
+
+	public static void main(String[] args) {
+		DatabaseUtil databaseUtil = new DatabaseUtil();
+		databaseUtil.setSystem("user");
+		List<JSONObject> l = databaseUtil.getDataFromMongo("sampleCollection", "title", "MongoDB");
+		System.err.println(l);
 	}
 }
