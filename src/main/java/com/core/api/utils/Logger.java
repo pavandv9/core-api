@@ -6,14 +6,17 @@ package com.core.api.utils;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ServiceLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.testng.Reporter;
+import org.testng.annotations.AfterSuite;
 
 import com.core.api.HttpRequest;
 import com.core.api.HttpResponse;
+import com.core.api.config.ReportConfig;
 import com.core.api.constants.DefProperty;
 import com.core.api.constants.MailProperty;
 import com.core.api.constants.ResourceFile;
@@ -45,7 +48,6 @@ public class Logger implements ILogger {
 		builder.append(String.format(FORMAT_TEXT, "Query Paramas", ":", prettyMap(httpRequest.getQueryParams())));
 		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(httpRequest.getHeaders())));
 		builder.append(String.format(FORMAT_TEXT, "Body", ":", NEW_LINE + getJsonBody()));
-
 		String requestLog = prefix + builder.toString() + suffix;
 		LOG.info(requestLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
@@ -66,6 +68,7 @@ public class Logger implements ILogger {
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 		Allure.addAttachment("Response", builder.toString());
+		ReportConfig.uploadAndGetReportLink();
 	}
 
 	private static String prettyMap(Map<String, Object> map) {
@@ -162,5 +165,10 @@ public class Logger implements ILogger {
 		String mailProps = prefix + builder.toString() + suffix;
 		LOG.info(mailProps);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
+	}
+
+	@AfterSuite
+	public void generateReport() {
+		LOG.info(String.format(FORMAT_TEXT, "Find the report here", ":", ReportConfig.uploadAndGetReportLink()));
 	}
 }

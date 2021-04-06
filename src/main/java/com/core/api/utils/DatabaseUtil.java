@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +18,10 @@ import com.core.api.exception.DatabaseException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.mysql.cj.exceptions.CJCommunicationsException;
 
 /**
@@ -43,8 +46,22 @@ public class DatabaseUtil implements ILogger {
 		this.system = system;
 	}
 
+	/**
+	 * Set system
+	 * 
+	 * @param system
+	 */
 	public void setSystem(String system) {
 		this.system = system;
+	}
+
+	/**
+	 * Get system
+	 * 
+	 * @return
+	 */
+	public String getSystem() {
+		return system;
 	}
 
 	/**
@@ -59,41 +76,6 @@ public class DatabaseUtil implements ILogger {
 			throw new DatabaseException("Database system not found");
 		}
 		return execute(sqlQuery, system);
-	}
-
-	/**
-	 * Execute sql query.
-	 * 
-	 * @param sqlQuery
-	 * @param system
-	 * @return
-	 */
-	public List<Map<String, Object>> execute(String sqlQuery, String system) {
-		if (jdbcTemplate == null || !system.equals(this.system)) {
-			LOG.info("Connecting to database: " + system);
-			try {
-				jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
-			} catch (CJCommunicationsException e) {
-				LOG.error(e.getLocalizedMessage());
-				throw new DatabaseException("Database connection failed. " + e.getLocalizedMessage());
-			} catch (Exception e) {
-				LOG.error(e.getLocalizedMessage());
-				throw new DatabaseException("Unable to connect to database");
-			}
-		}
-		List<Map<String, Object>> result = null;
-		try {
-			result = jdbcTemplate.queryForList(sqlQuery);
-			LOG.info("Executed sql query successfully");
-			LOG.info(Logger.NEW_LINE + Logger.suffix);
-		} catch (BadSqlGrammarException e) {
-			LOG.error(e.getLocalizedMessage());
-			throw new DatabaseException("Check the SQL query, " + e.getLocalizedMessage());
-		} catch (Exception e) {
-			LOG.error(e.getLocalizedMessage());
-			throw new DatabaseException("Failed to execute query, " + e.getLocalizedMessage());
-		}
-		return result;
 	}
 
 	/**
@@ -162,12 +144,104 @@ public class DatabaseUtil implements ILogger {
 	}
 
 	/**
+	 * Get data from mongo database.
+	 * 
+	 * @param collection
+	 * @param searchKey
+	 * @param searchValue
+	 * @return List of JSONObject
+	 */
+	public List<JSONObject> getDataFromMongo(String collection, String searchKey, String searchValue) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before getting collection");
+			throw new DatabaseException("Database system not found");
+		}
+		return getDataFromMongo(system, collection, searchKey, searchValue);
+	}
+
+	/**
+	 * Update data in mongo database.
+	 * 
+	 * @param collection
+	 * @param searchKey
+	 * @param searchValue
+	 * @param updateKey
+	 * @param updateValue
+	 */
+	public void updateDataInMongo(String collection, String searchKey, String searchValue, String updateKey,
+			String updateValue) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before getting collection");
+			throw new DatabaseException("Database system not found");
+		}
+		updateDataInMongo(system, collection, searchKey, searchValue, updateKey, updateValue);
+	}
+
+	/**
+	 * Delete data in mongo database.
+	 * 
+	 * @param collection
+	 * @param deleteKey
+	 * @param deleteValue
+	 */
+	public void deleteDataInMongo(String collection, String deleteKey, String deleteValue) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before getting collection");
+			throw new DatabaseException("Database system not found");
+		}
+		deleteDataInMongo(system, collection, deleteKey, deleteValue);
+	}
+
+	public void insertDataInMongo(String collection, Document document) {
+		if (system.isEmpty()) {
+			LOG.warn("Set system before getting collection");
+			throw new DatabaseException("Database system not found");
+		}
+		insertDataInMongo(system, collection, document);
+	}
+
+	/**
+	 * Execute sql query.
+	 * 
+	 * @param sqlQuery
+	 * @param system
+	 * @return
+	 */
+	public List<Map<String, Object>> execute(String system, String sqlQuery) {
+		if (jdbcTemplate == null || !system.equals(this.system)) {
+			LOG.info("Connecting to database: " + system);
+			try {
+				jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
+			} catch (CJCommunicationsException e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Database connection failed. " + e.getLocalizedMessage());
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to connect to database");
+			}
+		}
+		List<Map<String, Object>> result = null;
+		try {
+			result = jdbcTemplate.queryForList(sqlQuery);
+			LOG.info("Executed sql query successfully: " + result);
+			LOG.info(Logger.NEW_LINE + Logger.suffix);
+		} catch (BadSqlGrammarException e) {
+			LOG.error(e.getLocalizedMessage());
+			throw new DatabaseException("Check the SQL query, " + e.getLocalizedMessage());
+		} catch (Exception e) {
+			LOG.error(e.getLocalizedMessage());
+			throw new DatabaseException("Failed to execute query, " + e.getLocalizedMessage());
+		}
+		return result;
+	}
+
+	/**
 	 * Update sql query
 	 * 
 	 * @param sqlQuery
 	 * @param system
 	 */
-	public void update(String sqlQuery, String system) {
+	public void update(String system, String sqlQuery) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
 		try {
 			LOG.info("Connecting to database: " + system);
@@ -186,14 +260,15 @@ public class DatabaseUtil implements ILogger {
 		}
 	}
 
-	public List<JSONObject> getDataFromMongo(String collection, String searchKey, String searchValue) {
-		if (system.isEmpty()) {
-			LOG.warn("Set system before getting collection");
-			throw new DatabaseException("Database system not found");
-		}
-		return getDataFromMongo(system, collection, searchKey, searchValue);
-	}
-
+	/**
+	 * Get data from mongo database.
+	 * 
+	 * @param system
+	 * @param collection
+	 * @param searchKey
+	 * @param searchValue
+	 * @return List of JSONObject
+	 */
 	public List<JSONObject> getDataFromMongo(String system, String collection, String searchKey, String searchValue) {
 		if (mongoDatabase == null || !system.equals(this.system)) {
 			LOG.info("Connecting to mongo database: " + system);
@@ -201,7 +276,7 @@ public class DatabaseUtil implements ILogger {
 				mongoDatabase = new NoSqlConfig().getMongoConnection(system);
 			} catch (Exception e) {
 				LOG.error(e.getLocalizedMessage());
-				throw new DatabaseException("Unable to connect to mongo database");
+				throw new DatabaseException("Unable to connect to mongo database: " + e.getLocalizedMessage());
 			}
 			try {
 				FindIterable<Document> filerableDocument = mongoDatabase.getCollection(collection)
@@ -215,16 +290,93 @@ public class DatabaseUtil implements ILogger {
 				return document;
 			} catch (Exception e) {
 				LOG.error(e.getLocalizedMessage());
-				throw new DatabaseException("Unable to retrive the data");
+				throw new DatabaseException("Unable to retrive the data: " + e.getLocalizedMessage());
 			}
 		}
 		return null;
 	}
 
-	public static void main(String[] args) {
-		DatabaseUtil databaseUtil = new DatabaseUtil();
-		databaseUtil.setSystem("user");
-		List<JSONObject> l = databaseUtil.getDataFromMongo("sampleCollection", "title", "MongoDB");
-		System.err.println(l);
+	/**
+	 * Update data from mongo database.
+	 * 
+	 * @param system
+	 * @param collection
+	 * @param searchKey
+	 * @param searchValue
+	 * @param updateKey
+	 * @param updateValue
+	 */
+	public void updateDataInMongo(String system, String collection, String searchKey, String searchValue,
+			String updateKey, String updateValue) {
+		if (mongoDatabase == null || !system.equals(this.system)) {
+			LOG.info("Connecting to mongo database: " + system);
+			try {
+				mongoDatabase = new NoSqlConfig().getMongoConnection(system);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to connect to mongo database: " + e.getLocalizedMessage());
+			}
+			try {
+				UpdateResult updateResult = mongoDatabase.getCollection(collection)
+						.updateOne(Filters.eq(searchKey, searchValue), Updates.set(updateKey, updateValue));
+				LOG.info("Number of mongo data updated: " + updateResult.getModifiedCount());
+				LOG.info(Logger.NEW_LINE + Logger.suffix);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to update the data: " + e.getLocalizedMessage());
+			}
+		}
 	}
+
+	/**
+	 * Delete data from mongo database.
+	 * 
+	 * @param system
+	 * @param collection
+	 * @param deleteKey
+	 * @param deleteValue
+	 */
+	public void deleteDataInMongo(String system, String collection, String deleteKey, String deleteValue) {
+		if (mongoDatabase == null || !system.equals(this.system)) {
+			LOG.info("Connecting to mongo database: " + system);
+			try {
+				mongoDatabase = new NoSqlConfig().getMongoConnection(system);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to connect to mongo database: " + e.getLocalizedMessage());
+			}
+			try {
+				DeleteResult deleteResult = mongoDatabase.getCollection(collection)
+						.deleteOne(Filters.eq(deleteKey, deleteValue));
+				LOG.info("Number of mongo data deleted: " + deleteResult.getDeletedCount());
+				LOG.info(Logger.NEW_LINE + Logger.suffix);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to delete the data: " + e.getLocalizedMessage());
+			}
+		}
+	}
+
+	public void insertDataInMongo(String system, String collection, Map<String, Object> keyAndValue) {
+		if (mongoDatabase == null || !system.equals(this.system)) {
+			LOG.info("Connecting to mongo database: " + system);
+			try {
+				mongoDatabase = new NoSqlConfig().getMongoConnection(system);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to connect to mongo database: " + e.getLocalizedMessage());
+			}
+			try {
+				Document document = new Document();
+				keyAndValue.forEach((key, value) -> document.append(key, value));
+				mongoDatabase.getCollection(collection).insertOne(document);
+				LOG.info("Data inserted successfully");
+				LOG.info(Logger.NEW_LINE + Logger.suffix);
+			} catch (Exception e) {
+				LOG.error(e.getLocalizedMessage());
+				throw new DatabaseException("Unable to insert the data: " + e.getLocalizedMessage());
+			}
+		}
+	}
+
 }

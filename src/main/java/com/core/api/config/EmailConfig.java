@@ -82,7 +82,8 @@ public class EmailConfig implements ILogger {
 		message.setFrom(PropertyUtil.get(MailProperty.FROM));
 		message.setSubject(
 				!PropertyUtil.get(MailProperty.SUB).isEmpty() ? PropertyUtil.get(MailProperty.SUB) : DefProperty.SUB);
-		message.setText(!PropertyUtil.get(MailProperty.TEXT).isEmpty() ? PropertyUtil.get(MailProperty.TEXT)
+		message.setText(!PropertyUtil.get(MailProperty.TEXT).isEmpty()
+				? PropertyUtil.get(MailProperty.TEXT) + "\n\n" + testcases
 				: DefProperty.TEXT + "\n\n" + testcases);
 		return message;
 	}
