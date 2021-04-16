@@ -59,6 +59,8 @@
 		<json.simple.version>1.1.1</json.simple.version>
 		<jackson.databind.version>2.12.1</jackson.databind.version>
 		<oracle.database.version>11.2.0.4</oracle.database.version>
+		<mongo.driver.version>3.12.8</mongo.driver.version>
+		<aws.s3.version>1.11.986</aws.s3.version>
 	</properties>
 
 	<dependencies>
@@ -147,6 +149,21 @@
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>${oracle.database.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongo.driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>${aws.s3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-commandline</artifactId>
+			<version>2.13.8</version>
 		</dependency>
 
 

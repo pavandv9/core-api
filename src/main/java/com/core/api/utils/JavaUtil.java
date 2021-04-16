@@ -3,6 +3,12 @@
  */
 package com.core.api.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.core.api.exception.HttpException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.underscore.lodash.Json.JsonStringBuilder.Step;
@@ -15,7 +21,7 @@ import lombok.NonNull;
  * @author Pavan.DV
  *
  */
-public class JavaUtil {
+public class JavaUtil implements ILogger {
 
 	public static String toJson(Object object) {
 		String json = "";
@@ -59,4 +65,29 @@ public class JavaUtil {
 			return false;
 		}
 	}
+
+	public static void executeShellCommand(String... shellCmd) {
+		try {
+			ProcessBuilder builder = new ProcessBuilder(shellCmd);
+			builder.redirectErrorStream(true);
+			Process process = builder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while (true) {
+				String line = reader.readLine();
+				if (line == null)
+					break;
+				LOG.info(line);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new HttpException(
+					String.format("Unable to execute shell command: %1s. %2s", shellCmd, e.getLocalizedMessage()));
+		}
+	}
+
+	public static String getCurrentDate(String pattern) {
+		return new SimpleDateFormat(pattern).format(new Date());
+	}
+
 }

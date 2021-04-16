@@ -11,6 +11,7 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
+import com.core.api.config.ReportConfig;
 import com.core.api.utils.SpringMailUtil;
 
 /**
@@ -69,16 +70,18 @@ public class MailListner implements ITestListener {
 
 	private StringBuilder getReport() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format(FORMAT_TEXT, "Total test case", ":", getTotalTestCase()));
-		builder.append(String.format(FORMAT_TEXT, "Passed test case", ":", passedtests.size()));
-		builder.append(String.format(FORMAT_TEXT, "Failed test case", ":", failedtests.size()));
-		builder.append(String.format(FORMAT_TEXT, "Skipped test case", ":", skippedtests.size()));
+		builder.append(String.format(FORMAT_TEXT, "Total Test Case", ":", getTotalTestCase()));
+		builder.append(String.format(FORMAT_TEXT, "Passed Test Case", ":", passedtests.size()));
+		builder.append(String.format(FORMAT_TEXT, "Failed Test Case", ":", failedtests.size()));
+		builder.append(String.format(FORMAT_TEXT, "Skipped Test Case", ":", skippedtests.size()));
 		builder.append(NEW_LINE);
 		if (!failedtests.isEmpty())
-			builder.append(String.format(FORMAT_TEXT, "Failed test methods", ":", failedtests.get(0).getMethodName()));
+			builder.append(String.format(FORMAT_TEXT, "Failed Test Methods", ":", failedtests.get(0).getMethodName()));
 		if (!skippedtests.isEmpty())
 			builder.append(
-					String.format(FORMAT_TEXT, "Skipped test methods", ":", skippedtests.get(0).getMethodName()));
+					String.format(FORMAT_TEXT, "Skipped Test Methods", ":", skippedtests.get(0).getMethodName()));
+		builder.append(NEW_LINE);
+		builder.append(String.format(FORMAT_TEXT, "Report", ":", ReportConfig.getAllureReportLink()));
 		return builder;
 	}
 

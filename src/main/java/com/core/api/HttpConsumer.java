@@ -4,10 +4,12 @@
  */
 package com.core.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
@@ -48,6 +50,10 @@ import lombok.NonNull;
 public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
 	private HttpRequest httpRequest;
+
+	static {
+		clearFiles();
+	}
 
 	/**
 	 * Process HttpRequest
@@ -294,4 +300,24 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		}
 		return entity;
 	}
+
+	private static void clearFiles() {
+		cleareAllureResultsFiles();
+		cleareAllureReport();
+	}
+
+	private static void cleareAllureResultsFiles() {
+		try {
+			Arrays.stream(new File("allure-results").listFiles()).forEach(File::delete);
+		} catch (NullPointerException e) {
+		}
+	}
+
+	private static void cleareAllureReport() {
+		try {
+			Arrays.stream(new File("allure-report").listFiles()).forEach(File::delete);
+		} catch (NullPointerException e) {
+		}
+	}
+
 }

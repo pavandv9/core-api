@@ -9,7 +9,7 @@ package com.core.api.constants;
  */
 public enum ResourceFile implements IConfig {
 
-	CONFIG_FILE("config.properties"), MAIL_FILE("mail.properties"), DB_FILE("db.json");
+	CONFIG_FILE("config.properties"), MAIL_FILE("mail.properties"), DB_FILE("db.json"), DB_NOSQL_FILE("db.nosql.json");
 
 	private String value;
 
