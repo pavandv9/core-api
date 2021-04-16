@@ -6,13 +6,11 @@ package com.core.api.utils;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ServiceLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.testng.Reporter;
-import org.testng.annotations.AfterSuite;
 
 import com.core.api.HttpRequest;
 import com.core.api.HttpResponse;
@@ -68,7 +66,8 @@ public class Logger implements ILogger {
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 		Allure.addAttachment("Response", builder.toString());
-		ReportConfig.uploadAndGetReportLink();
+		LOG.info(
+				String.format(FORMAT_TEXT, "Find the report here", ":", ReportConfig.getAllureReportLink()));
 	}
 
 	private static String prettyMap(Map<String, Object> map) {
@@ -167,8 +166,4 @@ public class Logger implements ILogger {
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 	}
 
-	@AfterSuite
-	public void generateReport() {
-		LOG.info(String.format(FORMAT_TEXT, "Find the report here", ":", ReportConfig.uploadAndGetReportLink()));
-	}
 }

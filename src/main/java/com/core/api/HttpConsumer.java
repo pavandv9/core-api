@@ -51,6 +51,10 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
 	private HttpRequest httpRequest;
 
+	static {
+		clearFiles();
+	}
+
 	/**
 	 * Process HttpRequest
 	 * 
@@ -58,7 +62,6 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 * @return
 	 */
 	private HttpResponse processRequest() {
-		clearFiles();
 		loadConfigFileAndValidateRequest();
 		httpRequest.getBody();
 		Logger.logRequest(httpRequest);
@@ -298,19 +301,19 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return entity;
 	}
 
-	private void clearFiles() {
+	private static void clearFiles() {
 		cleareAllureResultsFiles();
 		cleareAllureReport();
 	}
 
-	private void cleareAllureResultsFiles() {
+	private static void cleareAllureResultsFiles() {
 		try {
 			Arrays.stream(new File("allure-results").listFiles()).forEach(File::delete);
 		} catch (NullPointerException e) {
 		}
 	}
 
-	private void cleareAllureReport() {
+	private static void cleareAllureReport() {
 		try {
 			Arrays.stream(new File("allure-report").listFiles()).forEach(File::delete);
 		} catch (NullPointerException e) {

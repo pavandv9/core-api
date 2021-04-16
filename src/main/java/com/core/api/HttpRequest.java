@@ -245,4 +245,5 @@ public class HttpRequest {
 	public String getAuthorization() {
 		return RequestUtil.getAuthorization(headers);
 	}
+	
 }

@@ -56,7 +56,7 @@ public class ReportConfig implements ILogger {
 
 	private static void generateAllureReport() {
 		if (System.getProperty("os.name") != null && System.getProperty("os.name").startsWith("Mac")) {
-			JavaUtil.executeShellCommand("sh", "-c", "/usr/local/Cellar/allure/2.13.8/bin/allure generate allure-results --clean -o allure-report");
+			JavaUtil.executeShellCommand("sh", "-c", "/usr/local/Cellar/allure/2.13.9/bin/allure generate allure-results --clean -o allure-report");
 		} else {
 			LOG.error("Contact developer for adding win/linux execute command for allure report");
 		}
