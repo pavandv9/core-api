@@ -26,7 +26,7 @@ import com.mysql.cj.exceptions.CJCommunicationsException;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 public class DatabaseUtil implements ILogger {
 
@@ -222,8 +222,9 @@ public class DatabaseUtil implements ILogger {
 		}
 		List<Map<String, Object>> result = null;
 		try {
+			LOG.info("{}:[{}]", "Executing sql query", sqlQuery);
 			result = jdbcTemplate.queryForList(sqlQuery);
-			LOG.info("Executed sql query successfully: " + result);
+			LOG.info("{}{}", "Executed sql query successfully:", result);
 			LOG.info(Logger.NEW_LINE + Logger.suffix);
 		} catch (BadSqlGrammarException e) {
 			LOG.error(e.getLocalizedMessage());
@@ -378,5 +379,4 @@ public class DatabaseUtil implements ILogger {
 			}
 		}
 	}
-
 }

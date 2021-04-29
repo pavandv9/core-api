@@ -13,6 +13,11 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoDatabase;
 
+/**
+ * 
+ * @author Pavan.DV
+ * @since 1.1.0
+ */
 public class NoSqlConfig implements DatabaseConstants {
 
 	public MongoDatabase getMongoConnection(String system) {

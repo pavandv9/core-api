@@ -16,7 +16,7 @@ import com.core.api.constants.ResourceFile;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 public class SpringMailUtil implements ILogger {
 

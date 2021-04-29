@@ -20,6 +20,7 @@ import lombok.NonNull;
  *         <b>apiNote</b> HttpRequest which forms the request. Pass HttpRequest
  *         object to the execute method which is available in getHttpClient of
  *         ServiceHelper interface.
+ * @since 1.0.0
  */
 public class HttpRequest {
 
@@ -223,7 +224,7 @@ public class HttpRequest {
 	}
 
 	public HttpRequest addContentType(@NonNull String value) {
-		addHeader("ContentType", value);
+		addHeader("Content-Type", value);
 		return this;
 	}
 
@@ -245,5 +246,5 @@ public class HttpRequest {
 	public String getAuthorization() {
 		return RequestUtil.getAuthorization(headers);
 	}
-	
+
 }

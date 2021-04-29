@@ -23,7 +23,7 @@ import io.qameta.allure.Allure;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 public class Logger implements ILogger {
 
@@ -45,7 +45,7 @@ public class Logger implements ILogger {
 		builder.append(String.format(FORMAT_TEXT, "Path Params", ":", prettyMap(httpRequest.getPathParams())));
 		builder.append(String.format(FORMAT_TEXT, "Query Paramas", ":", prettyMap(httpRequest.getQueryParams())));
 		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(httpRequest.getHeaders())));
-		builder.append(String.format(FORMAT_TEXT, "Body", ":", NEW_LINE + getJsonBody()));
+		builder.append(String.format(FORMAT_TEXT, "Body", ":", NEW_LINE + getRequestBody()));
 		String requestLog = prefix + builder.toString() + suffix;
 		LOG.info(requestLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
@@ -62,12 +62,11 @@ public class Logger implements ILogger {
 		builder.append(String.format(FORMAT_TEXT, "Status message", ":", response.getStatusLine().getStatusMessage()));
 		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(response.getHeaders())));
 		builder = appendBody(builder, response);
+		builder.append(String.format(FORMAT_TEXT, "Find the report here", ":", ReportConfig.getAllureReportLink()));
 		String responseLog = prefix + builder.toString() + suffix;
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 		Allure.addAttachment("Response", builder.toString());
-		LOG.info(
-				String.format(FORMAT_TEXT, "Find the report here", ":", ReportConfig.getAllureReportLink()));
 	}
 
 	private static String prettyMap(Map<String, Object> map) {
@@ -116,10 +115,10 @@ public class Logger implements ILogger {
 				: httpRequest.getEndPoint();
 	}
 
-	private static String getJsonBody() {
-		String body = JavaUtil.toJson(httpRequest.getBody());
-		body = JavaUtil.prettyJson(body);
-		return body;
+	private static String getRequestBody() {
+		return httpRequest.getContentType().contains("json") == true
+				? JavaUtil.prettyJson(JavaUtil.toJson(httpRequest.getBody()))
+				: JavaUtil.prettyXml(JavaUtil.toXml(httpRequest.getBody()));
 	}
 
 	public static void logMailProperties() {

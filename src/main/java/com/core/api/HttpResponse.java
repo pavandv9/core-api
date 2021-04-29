@@ -18,7 +18,7 @@ import lombok.ToString;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 @ToString
 public abstract class HttpResponse implements ILogger {

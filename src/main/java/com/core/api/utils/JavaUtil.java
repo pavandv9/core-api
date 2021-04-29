@@ -19,7 +19,7 @@ import lombok.NonNull;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 public class JavaUtil implements ILogger {
 
@@ -66,17 +66,19 @@ public class JavaUtil implements ILogger {
 		}
 	}
 
-	public static void executeShellCommand(String... shellCmd) {
+	public static String executeShellCommand(String... shellCmd) {
 		try {
 			ProcessBuilder builder = new ProcessBuilder(shellCmd);
 			builder.redirectErrorStream(true);
 			Process process = builder.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			LOG.info("Execution of shell command in progress...");
 			while (true) {
 				String line = reader.readLine();
-				if (line == null)
-					break;
-				LOG.info(line);
+				if (line == null) {
+					LOG.info("Executing of shell command is completed.");
+					return line;
+				}
 			}
 
 		} catch (IOException e) {
@@ -88,6 +90,10 @@ public class JavaUtil implements ILogger {
 
 	public static String getCurrentDate(String pattern) {
 		return new SimpleDateFormat(pattern).format(new Date());
+	}
+
+	public static String toXml(Object obj) {
+		return U.jsonToXml(toJson(obj));
 	}
 
 }

@@ -15,7 +15,7 @@ import com.core.api.model.StatusLine;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 public final class AbstractResponse extends HttpResponse {
 

@@ -16,6 +16,7 @@
 	<logger name="o.s.beans.factory.xml.XmlBeanDefinitionReader"
 		level="ERROR" />
 	<logger name="com.amazonaws" level="ERROR" />
+	<logger name="com.jayway.jsonpath" level="ERROR" />
+	<logger name="org.springframework.jdbc" level="ERROR" />
 	<!-- <logger name="org.mongodb.driver" level="ERROR"/> -->
-	<!-- <logger name="org.springframework" level="ERROR" /> -->
 </configuration>

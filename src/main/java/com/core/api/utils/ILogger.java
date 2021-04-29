@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Pavan.DV
- *
+ * @since 1.0.0
  */
 public interface ILogger {
 
-	public static final Logger LOG = LoggerFactory.getLogger(ILogger.class);
+	Logger LOG = LoggerFactory.getLogger(ILogger.class);
 }

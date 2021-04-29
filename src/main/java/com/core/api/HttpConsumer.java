@@ -32,6 +32,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
+import com.core.api.config.AwsConfig;
+import com.core.api.constants.AWSConstants;
 import com.core.api.constants.ConfigProperty;
 import com.core.api.constants.HttpMethod;
 import com.core.api.constants.IHeaders;
@@ -45,6 +47,8 @@ import lombok.NonNull;
 
 /**
  * @author Pavan.DV
+ * 
+ * @since 1.0.0
  *
  */
 public class HttpConsumer implements HttpClient, ILogger, IHeaders {
@@ -53,6 +57,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
 	static {
 		clearFiles();
+		AwsConfig.getInstance().connectToS3().clearFilesFromS3BucketSince(AWSConstants.BUCKET_NAME, "allure-report");
 	}
 
 	/**
@@ -63,7 +68,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 */
 	private HttpResponse processRequest() {
 		loadConfigFileAndValidateRequest();
-		httpRequest.getBody();
+//		httpRequest.getBody();
 		Logger.logRequest(httpRequest);
 		CloseableHttpResponse closeableHttpResponse = null;
 		HttpResponse httpResponse = null;
@@ -309,6 +314,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	private static void cleareAllureResultsFiles() {
 		try {
 			Arrays.stream(new File("allure-results").listFiles()).forEach(File::delete);
+			LOG.info("allure-results cleared from repository.");
 		} catch (NullPointerException e) {
 		}
 	}
@@ -316,6 +322,7 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	private static void cleareAllureReport() {
 		try {
 			Arrays.stream(new File("allure-report").listFiles()).forEach(File::delete);
+			LOG.info("allure-report cleared from repository.");
 		} catch (NullPointerException e) {
 		}
 	}

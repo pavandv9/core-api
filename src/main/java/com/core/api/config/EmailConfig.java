@@ -21,6 +21,7 @@ import com.core.api.utils.PropertyUtil;
 /**
  * @author Pavan.DV
  *
+ * @since 1.0.0
  */
 @Configuration
 public class EmailConfig implements ILogger {
