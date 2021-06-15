@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import com.core.api.HttpRequest;
 import com.core.api.HttpResponse;
 import com.core.api.Request;
+import com.core.api.config.ReportListener;
 import com.core.api.constants.HttpMethod;
 import com.core.api.listners.MailListner;
 import com.core.api.listners.Report;
@@ -16,10 +17,10 @@ import com.core.api.utils.ILogger;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 
-@Listeners(MailListner.class)
-public class SampleTest implements Report, ILogger {
+@Listeners({MailListner.class, ReportListener.class})
+public class SampleTest implements ILogger {
 	
-	@Test(description = "Core API Test")
+	@Test(description = "Core API Test", invocationCount = 1)
 	public void reqResApi() {
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.addBaseUrl("https://reqres.in/api/users/2").addMethod(HttpMethod.GET);
