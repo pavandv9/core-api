@@ -12,9 +12,11 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.testng.Reporter;
 
+import com.aventstack.extentreports.Status;
 import com.core.api.HttpRequest;
 import com.core.api.HttpResponse;
 import com.core.api.config.ReportConfig;
+import com.core.api.config.ReportUtil;
 import com.core.api.constants.DefProperty;
 import com.core.api.constants.MailProperty;
 import com.core.api.constants.ResourceFile;
@@ -50,6 +52,7 @@ public class Logger implements ILogger {
 		LOG.info(requestLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 		Allure.addAttachment("Request", builder.toString());
+		ReportUtil.logReqRes(Status.INFO, requestLog);
 	}
 
 	public static void logResponse(HttpResponse response) {
@@ -67,6 +70,7 @@ public class Logger implements ILogger {
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 		Allure.addAttachment("Response", builder.toString());
+		ReportUtil.logReqRes(Status.PASS, responseLog);
 	}
 
 	private static String prettyMap(Map<String, Object> map) {
