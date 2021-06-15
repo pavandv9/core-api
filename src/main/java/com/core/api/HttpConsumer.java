@@ -118,11 +118,8 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 */
 	private void loadConfigFileAndValidateRequest() {
 		loadConfig();
-		try {
-			httpRequest.getHttpMethod().toString();
-		} catch (NullPointerException e) {
+		if (httpRequest.getHttpMethod() == null)
 			throw new HttpException("HttpMethod not found in the request");
-		}
 	}
 
 	/**
