@@ -10,7 +10,6 @@ import org.apache.http.HttpHeaders;
 
 import com.core.api.constants.HttpMethod;
 
-import lombok.Getter;
 import lombok.NonNull;
 
 /**
@@ -24,43 +23,68 @@ import lombok.NonNull;
  */
 public class HttpRequest {
 
+	private Object body;
+
+	private String baseUrl;
+
+	private String endPoint;
+
+	private HttpMethod httpMethod;
+
+	private Map<String, Object> headers = new HashMap<String, Object>();
+
+	private Map<String, Object> pathParams = new HashMap<String, Object>();
+
+	private Map<String, Object> queryParams = new HashMap<String, Object>();
+
 	/**
 	 * Get request body
 	 */
-	@Getter
-	private Object body;
+	public Object getBody() {
+		return body;
+	}
 
 	/**
 	 * Get request base url
 	 */
-	@Getter
-	private String baseUrl;
+	public String getBaseUrl() {
+		return baseUrl;
+	}
 
 	/**
 	 * Get request endpoint
 	 */
-	@Getter
-	private String endPoint;
+	public String getEndPoint() {
+		return endPoint;
+	}
+
 	/**
 	 * Get request httpMethod
 	 */
-	@Getter
-	private HttpMethod httpMethod;
+	public HttpMethod getHttpMethod() {
+		return httpMethod;
+	}
+
 	/**
 	 * Get request headers
 	 */
-	@Getter
-	private Map<String, Object> headers = new HashMap<String, Object>();
+	public Map<String, Object> getHeaders() {
+		return headers;
+	}
+
 	/**
 	 * Get request path parameters
 	 */
-	@Getter
-	private Map<String, Object> pathParams = new HashMap<String, Object>();
+	public Map<String, Object> getPathParams() {
+		return pathParams;
+	}
+
 	/**
 	 * Get request query parameters
 	 */
-	@Getter
-	private Map<String, Object> queryParams = new HashMap<String, Object>();
+	public Map<String, Object> getQueryParams() {
+		return queryParams;
+	}
 
 	/**
 	 * Add base url to the HttpRequest
