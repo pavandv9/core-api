@@ -13,9 +13,8 @@ import org.json.XML;
 import org.testng.Reporter;
 
 import com.aventstack.extentreports.Status;
-import com.core.api.HttpRequest;
-import com.core.api.HttpResponse;
-import com.core.api.config.ReportConfig;
+import com.core.api.Request;
+import com.core.api.Response;
 import com.core.api.config.ReportUtil;
 import com.core.api.constants.DefProperty;
 import com.core.api.constants.MailProperty;
@@ -29,24 +28,24 @@ import io.qameta.allure.Allure;
  */
 public class Logger implements ILogger {
 
-	private static HttpRequest httpRequest;
+	private static Request request;
 	static String NEW_LINE = System.lineSeparator();
 	private static String FORMAT = "%1$-15s%2$-20s%3$-50s";
 	private static String FORMAT_TEXT = FORMAT + NEW_LINE;
 	static String suffix = "****************************************************************************************************";
 
-	public static void logRequest(HttpRequest httpRequest) {
-		Logger.httpRequest = httpRequest;
+	public static void logRequest(Request request) {
+		Logger.request = request;
 		String prefix = NEW_LINE
 				+ "********************************************* Request **********************************************"
 				+ NEW_LINE;
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format(FORMAT_TEXT, "Http Method", ":", httpRequest.getHttpMethod()));
-		builder.append(String.format(FORMAT_TEXT, "Base Url", ":", httpRequest.getBaseUrl()));
+		builder.append(String.format(FORMAT_TEXT, "Http Method", ":", request.getHttpMethod()));
+		builder.append(String.format(FORMAT_TEXT, "Base Url", ":", request.getBaseUrl()));
 		builder.append(String.format(FORMAT_TEXT, "End Point", ":", formatEndPoint()));
-		builder.append(String.format(FORMAT_TEXT, "Path Params", ":", prettyMap(httpRequest.getPathParams())));
-		builder.append(String.format(FORMAT_TEXT, "Query Paramas", ":", prettyMap(httpRequest.getQueryParams())));
-		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(httpRequest.getHeaders())));
+		builder.append(String.format(FORMAT_TEXT, "Path Params", ":", prettyMap(request.getPathParams())));
+		builder.append(String.format(FORMAT_TEXT, "Query Paramas", ":", prettyMap(request.getQueryParams())));
+		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(request.getHeaders())));
 		builder.append(String.format(FORMAT_TEXT, "Body", ":", NEW_LINE + getRequestBody()));
 		String requestLog = prefix + builder.toString() + suffix;
 		LOG.info(requestLog);
@@ -55,7 +54,7 @@ public class Logger implements ILogger {
 		ReportUtil.logReqRes(Status.INFO, requestLog);
 	}
 
-	public static void logResponse(HttpResponse response) {
+	public static void logResponse(Response response) {
 		String prefix = NEW_LINE
 				+ "********************************************* Response *********************************************"
 				+ NEW_LINE;
@@ -65,7 +64,7 @@ public class Logger implements ILogger {
 		builder.append(String.format(FORMAT_TEXT, "Status message", ":", response.getStatusLine().getStatusMessage()));
 		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(response.getHeaders())));
 		builder = appendBody(builder, response);
-		builder.append(String.format(FORMAT_TEXT, "Find the report here", ":", ReportConfig.getAllureReportLink()));
+		builder.append(String.format(FORMAT_TEXT, "Find the report using command", ":", "allure serve"));
 		String responseLog = prefix + builder.toString() + suffix;
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
@@ -86,18 +85,18 @@ public class Logger implements ILogger {
 				sb.append(',').append(String.format(NEW_LINE + "%35s", ""));
 			}
 		}
-		return sb.toString().isEmpty() ? "<nil>" : sb.toString();
+		return sb.toString().isEmpty() ? "<none>" : sb.toString();
 	}
 
-	private static StringBuilder appendBody(StringBuilder builder, HttpResponse response) {
+	private static StringBuilder appendBody(StringBuilder builder, Response response) {
 		if (!String.valueOf(response.getStatusLine().getStatusCode()).startsWith("5")) {
 			try {
 				builder.append(String.format(FORMAT_TEXT, "Response body", ":",
 						NEW_LINE + JavaUtil.prettyJson(response.getBody().toString())));
 			} catch (JSONException e) {
 				if (e.getMessage().contains("JSONObject text must begin with")) {
-					if (!httpRequest.getHeaders().equals(null)
-							|| httpRequest.getHeaders().get("Accept").toString().contains("xml")) {
+					if (!request.getHeaders().equals(null)
+							|| request.getHeaders().get("Accept").toString().contains("xml")) {
 						builder.append(String.format(FORMAT_TEXT, "Response body", ":",
 								NEW_LINE + JavaUtil.prettyXml(response.getBody().toString())));
 					} else {
@@ -115,14 +114,14 @@ public class Logger implements ILogger {
 	}
 
 	private static String formatEndPoint() {
-		return (httpRequest.getEndPoint() == null || httpRequest.getEndPoint().isEmpty()) ? "<nil>"
-				: httpRequest.getEndPoint();
+		return (request.getEndPoint() == null || request.getEndPoint().isEmpty()) ? "<none>"
+				: request.getEndPoint();
 	}
 
 	private static String getRequestBody() {
-		return httpRequest.getContentType().contains("json") == true
-				? JavaUtil.prettyJson(JavaUtil.toJson(httpRequest.getBody()))
-				: JavaUtil.prettyXml(JavaUtil.toXml(httpRequest.getBody()));
+		return request.getContentType().contains("json") == true
+				? JavaUtil.prettyJson(JavaUtil.toJson(request.getBody()))
+				: JavaUtil.prettyXml(JavaUtil.toXml(request.getBody()));
 	}
 
 	public static void logMailProperties() {

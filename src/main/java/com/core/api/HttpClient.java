@@ -11,8 +11,8 @@ import lombok.NonNull;
  */
 public interface HttpClient {
 
-	public HttpResponse execute(@NonNull HttpRequest httpRequest);
+	public Response execute(@NonNull Request httpRequest);
 
-	public HttpRequest getHttpRequest();
+	public Request getHttpRequest();
 
 }

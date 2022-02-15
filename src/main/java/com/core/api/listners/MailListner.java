@@ -11,7 +11,6 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
-import com.core.api.config.ReportConfig;
 import com.core.api.utils.SpringMailUtil;
 
 /**
@@ -81,7 +80,6 @@ public class MailListner implements ITestListener {
 			builder.append(
 					String.format(FORMAT_TEXT, "Skipped Test Methods", ":", skippedtests.get(0).getMethodName()));
 		builder.append(NEW_LINE);
-		builder.append(String.format(FORMAT_TEXT, "Report", ":", ReportConfig.getAllureReportLink()));
 		return builder;
 	}
 

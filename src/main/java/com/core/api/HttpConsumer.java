@@ -32,8 +32,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
-import com.core.api.config.AwsConfig;
-import com.core.api.constants.AWSConstants;
 import com.core.api.constants.ConfigProperty;
 import com.core.api.constants.HttpMethod;
 import com.core.api.constants.IHeaders;
@@ -53,11 +51,10 @@ import lombok.NonNull;
  */
 public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
-	private HttpRequest httpRequest;
+	private Request httpRequest;
 
 	static {
 		clearFiles();
-		AwsConfig.getInstance().connectToS3().clearFilesFromS3BucketSince(AWSConstants.BUCKET_NAME, "allure-report");
 	}
 
 	/**
@@ -66,12 +63,11 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 * @param httpRequest
 	 * @return
 	 */
-	private HttpResponse processRequest() {
+	private Response processRequest() {
 		loadConfigFileAndValidateRequest();
-//		httpRequest.getBody();
 		Logger.logRequest(httpRequest);
 		CloseableHttpResponse closeableHttpResponse = null;
-		HttpResponse httpResponse = null;
+		Response httpResponse = null;
 		try {
 			closeableHttpResponse = getDefaultClient().execute(getHttpUriRequest(httpRequest.getHttpMethod()));
 			httpResponse = new AbstractResponse(closeableHttpResponse);
@@ -84,12 +80,12 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	}
 
 	@Override
-	public HttpRequest getHttpRequest() {
+	public Request getHttpRequest() {
 		return httpRequest;
 	}
 
 	@Override
-	public HttpResponse execute(@NonNull HttpRequest httpRequest) {
+	public Response execute(@NonNull Request httpRequest) {
 		this.httpRequest = httpRequest;
 		return processRequest();
 	}

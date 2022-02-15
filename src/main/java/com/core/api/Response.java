@@ -17,7 +17,7 @@ import com.jayway.jsonpath.PathNotFoundException;
  * @author Pavan.DV
  * @since 1.0.0
  */
-public abstract class HttpResponse implements ILogger {
+public abstract class Response implements ILogger {
 	
 	protected int statusCode;
 
@@ -85,9 +85,10 @@ public abstract class HttpResponse implements ILogger {
 	 * Parse response body.
 	 * 
 	 * @param jsonpath
+	 * @example to get id inside body object "body.id"
 	 * @return path of the value
 	 */
-	public String parse(String jsonpath) {
+	public String path(String jsonpath) {
 		String value = "";
 		try {
 			DocumentContext documentContext = JsonPath.parse(getBody().toString());
@@ -100,7 +101,7 @@ public abstract class HttpResponse implements ILogger {
 
 	@Override
 	public String toString() {
-		return "HttpResponse [statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", statusLine="
+		return "Response [statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", statusLine="
 				+ statusLine + ", body=" + body + ", headers=" + headers + "]";
 	}
 	
