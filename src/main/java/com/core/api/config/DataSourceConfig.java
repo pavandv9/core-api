@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.core.api.config;
 
 import javax.sql.DataSource;
@@ -20,20 +17,34 @@ import com.core.api.exception.DatabaseException;
 import com.core.api.utils.JsonUtil;
 import com.core.api.utils.PropertyUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Pavan.DV
+ * The Class DataSourceConfig.
  *
+ * @author Pavan.DV
  * @since 1.0.0
  */
 @Configuration
 public class DataSourceConfig implements DatabaseConstants {
 
+	/**
+	 * Gets the data source.
+	 *
+	 * @param system the system
+	 * @return the data source
+	 */
 	@Bean
 	public DataSource getDataSource(String system) {
 		DataSourceBuilder<?> dataSourceBuilder = buildDataSource(system);
 		return dataSourceBuilder.build();
 	}
 
+	/**
+	 * Builds the data source.
+	 *
+	 * @param system the system
+	 * @return the data source builder
+	 */
 	private DataSourceBuilder<?> buildDataSource(String system) {
 		DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
 		JSONArray jsonArr = JsonUtil.readJsonFile(new PropertyUtil().getResourceFile(ResourceFile.DB_FILE));

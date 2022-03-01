@@ -22,43 +22,53 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import com.mysql.cj.exceptions.CJCommunicationsException;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class DatabaseUtil.
+ *
  * @author Pavan.DV
  * @since 1.0.0
  */
 public class DatabaseUtil implements ILogger {
 
+	/** The system. */
 	String system = "";
+	
+	/** The jdbc template. */
 	JdbcTemplate jdbcTemplate = null;
+	
+	/** The mongo database. */
 	MongoDatabase mongoDatabase;
 
+	/**
+	 * Instantiates a new database util.
+	 */
 	public DatabaseUtil() {
 	}
 
 	/**
-	 * Set system
-	 * 
-	 * @param system
+	 * Set system.
+	 *
+	 * @param system the system
 	 */
 	public DatabaseUtil(String system) {
 		this.system = system;
 	}
 
 	/**
-	 * Set system
-	 * 
-	 * @param system
+	 * Set system.
+	 *
+	 * @param system the new system
 	 */
 	public void setSystem(String system) {
 		this.system = system;
 	}
 
 	/**
-	 * Get system
-	 * 
-	 * @return
+	 * Get system.
+	 *
+	 * @return system
 	 */
 	public String getSystem() {
 		return system;
@@ -66,9 +76,9 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Execute's sql query.
-	 * 
-	 * @param sqlQuery
-	 * @return
+	 *
+	 * @param sqlQuery the sql query
+	 * @return list of data
 	 */
 	public List<Map<String, Object>> execute(String sqlQuery) {
 		if (system.isEmpty()) {
@@ -79,9 +89,9 @@ public class DatabaseUtil implements ILogger {
 	}
 
 	/**
-	 * Update sql query
-	 * 
-	 * @param sqlQuery
+	 * Update sql query.
+	 *
+	 * @param sqlQuery the sql query
 	 */
 	public void update(String sqlQuery) {
 		if (system.isEmpty()) {
@@ -93,8 +103,8 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Insert data to the database.
-	 * 
-	 * @param sqlQuery
+	 *
+	 * @param sqlQuery the sql query
 	 */
 	public void insert(String sqlQuery) {
 		if (system.isEmpty()) {
@@ -106,8 +116,9 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Insert data to the database.
-	 * 
-	 * @param sqlQuery
+	 *
+	 * @param sqlQuery the sql query
+	 * @param system the system
 	 */
 	public void insert(String sqlQuery, String system) {
 		if (system.isEmpty()) {
@@ -119,8 +130,8 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Delete data from the database.
-	 * 
-	 * @param sqlQuery
+	 *
+	 * @param sqlQuery the sql query
 	 */
 	public void delete(String sqlQuery) {
 		if (system.isEmpty()) {
@@ -132,8 +143,9 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Delete data from the database.
-	 * 
-	 * @param sqlQuery
+	 *
+	 * @param sqlQuery the sql query
+	 * @param system the system
 	 */
 	public void delete(String sqlQuery, String system) {
 		if (system.isEmpty()) {
@@ -145,10 +157,10 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Get data from mongo database.
-	 * 
-	 * @param collection
-	 * @param searchKey
-	 * @param searchValue
+	 *
+	 * @param collection the collection
+	 * @param searchKey the search key
+	 * @param searchValue the search value
 	 * @return List of JSONObject
 	 */
 	public List<JSONObject> getDataFromMongo(String collection, String searchKey, String searchValue) {
@@ -161,12 +173,12 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Update data in mongo database.
-	 * 
-	 * @param collection
-	 * @param searchKey
-	 * @param searchValue
-	 * @param updateKey
-	 * @param updateValue
+	 *
+	 * @param collection the collection
+	 * @param searchKey the search key
+	 * @param searchValue the search value
+	 * @param updateKey the update key
+	 * @param updateValue the update value
 	 */
 	public void updateDataInMongo(String collection, String searchKey, String searchValue, String updateKey,
 			String updateValue) {
@@ -179,10 +191,10 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Delete data in mongo database.
-	 * 
-	 * @param collection
-	 * @param deleteKey
-	 * @param deleteValue
+	 *
+	 * @param collection the collection
+	 * @param deleteKey the delete key
+	 * @param deleteValue the delete value
 	 */
 	public void deleteDataInMongo(String collection, String deleteKey, String deleteValue) {
 		if (system.isEmpty()) {
@@ -192,6 +204,12 @@ public class DatabaseUtil implements ILogger {
 		deleteDataInMongo(system, collection, deleteKey, deleteValue);
 	}
 
+	/**
+	 * Insert data in mongo.
+	 *
+	 * @param collection the collection
+	 * @param document the document
+	 */
 	public void insertDataInMongo(String collection, Document document) {
 		if (system.isEmpty()) {
 			LOG.warn("Set system before getting collection");
@@ -202,19 +220,16 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Execute sql query.
-	 * 
-	 * @param sqlQuery
-	 * @param system
-	 * @return
+	 *
+	 * @param system the system
+	 * @param sqlQuery the sql query
+	 * @return list of data
 	 */
 	public List<Map<String, Object>> execute(String system, String sqlQuery) {
 		if (jdbcTemplate == null || !system.equals(this.system)) {
 			LOG.info("Connecting to database: " + system);
 			try {
 				jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
-			} catch (CJCommunicationsException e) {
-				LOG.error(e.getLocalizedMessage());
-				throw new DatabaseException("Database connection failed. " + e.getLocalizedMessage());
 			} catch (Exception e) {
 				LOG.error(e.getLocalizedMessage());
 				throw new DatabaseException("Unable to connect to database");
@@ -237,10 +252,10 @@ public class DatabaseUtil implements ILogger {
 	}
 
 	/**
-	 * Update sql query
-	 * 
-	 * @param sqlQuery
-	 * @param system
+	 * Update sql query.
+	 *
+	 * @param system the system
+	 * @param sqlQuery the sql query
 	 */
 	public void update(String system, String sqlQuery) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(new DataSourceConfig().getDataSource(system));
@@ -252,9 +267,6 @@ public class DatabaseUtil implements ILogger {
 		} catch (BadSqlGrammarException e) {
 			LOG.error(e.getLocalizedMessage());
 			throw new DatabaseException(e.getLocalizedMessage());
-		} catch (CJCommunicationsException e) {
-			LOG.error(e.getLocalizedMessage());
-			throw new DatabaseException("Database connection failed. " + e.getLocalizedMessage());
 		} catch (Exception e) {
 			LOG.error(e.getLocalizedMessage());
 			throw new DatabaseException("Unable to connect to database");
@@ -263,11 +275,11 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Get data from mongo database.
-	 * 
-	 * @param system
-	 * @param collection
-	 * @param searchKey
-	 * @param searchValue
+	 *
+	 * @param system the system
+	 * @param collection the collection
+	 * @param searchKey the search key
+	 * @param searchValue the search value
 	 * @return List of JSONObject
 	 */
 	public List<JSONObject> getDataFromMongo(String system, String collection, String searchKey, String searchValue) {
@@ -299,13 +311,13 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Update data from mongo database.
-	 * 
-	 * @param system
-	 * @param collection
-	 * @param searchKey
-	 * @param searchValue
-	 * @param updateKey
-	 * @param updateValue
+	 *
+	 * @param system the system
+	 * @param collection the collection
+	 * @param searchKey the search key
+	 * @param searchValue the search value
+	 * @param updateKey the update key
+	 * @param updateValue the update value
 	 */
 	public void updateDataInMongo(String system, String collection, String searchKey, String searchValue,
 			String updateKey, String updateValue) {
@@ -331,11 +343,11 @@ public class DatabaseUtil implements ILogger {
 
 	/**
 	 * Delete data from mongo database.
-	 * 
-	 * @param system
-	 * @param collection
-	 * @param deleteKey
-	 * @param deleteValue
+	 *
+	 * @param system the system
+	 * @param collection the collection
+	 * @param deleteKey the delete key
+	 * @param deleteValue the delete value
 	 */
 	public void deleteDataInMongo(String system, String collection, String deleteKey, String deleteValue) {
 		if (mongoDatabase == null || !system.equals(this.system)) {
@@ -358,6 +370,13 @@ public class DatabaseUtil implements ILogger {
 		}
 	}
 
+	/**
+	 * Insert data into mongo db.
+	 *
+	 * @param system the system
+	 * @param collection the collection
+	 * @param keyAndValue the key and value
+	 */
 	public void insertDataInMongo(String system, String collection, Map<String, Object> keyAndValue) {
 		if (mongoDatabase == null || !system.equals(this.system)) {
 			LOG.info("Connecting to mongo database: " + system);

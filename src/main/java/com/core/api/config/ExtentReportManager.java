@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class is responsible for generating the Extent html report.
  * 
@@ -18,7 +19,10 @@ import java.util.Map;
  */
 public class ExtentReportManager {
 
+	/** The Constant PROJECT_NAME. */
 	private static final String PROJECT_NAME="PROJECT_NAME";
+	
+	/** The Constant REPORT_NAME. */
 	private static final String REPORT_NAME ="REPORT_NAME";
     /**
      * The extent reports.
@@ -51,6 +55,11 @@ public class ExtentReportManager {
         return extentReports;
     }
 
+    /**
+     * Gets the spark reporter.
+     *
+     * @return the spark reporter
+     */
     private static ExtentSparkReporter getSparkReporter() {
         ExtentSparkReporter spark = new ExtentSparkReporter("target" + File.separator + REPORT_NAME);
         spark.viewConfigurer()
@@ -73,8 +82,11 @@ public class ExtentReportManager {
     /**
      * Start test.
      *
+     * @param testClassName the test class name
+     * @param testClassDescription the test class description
      * @param testName the test name
      * @param desc     the desc
+     * @param testGroups the test groups
      */
     public synchronized static void startTest(String testClassName, String testClassDescription, String testName, String desc, String[] testGroups) {
         ExtentTest mainTest = subMap.get(testClassName);

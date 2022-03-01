@@ -5,11 +5,12 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
 
+// TODO: Auto-generated Javadoc
 /**
  * The listener interface for receiving report events. The class that is
  * interested in processing a report event implements this interface, and the
  * object created with that class is registered with a component using the
- * component's <code>addReportListener<code> method. When the report event
+ * component's addReportListener method. When the report event
  * occurs, that object's appropriate method is invoked.
  * 
  * @author Pavan.DV
@@ -81,20 +82,30 @@ public class ReportListener implements ITestListener {
 		return result.getMethod().getDescription() != null ? result.getMethod().getDescription() : getTestName(result);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
+	 */
 	@Override
 	public void onTestStart(ITestResult result) {
 		ExtentReportManager.startTest(getMainTestName(result), getMainTestDescription(result), getTestName(result),
 				getTestDescription(result), getTestGroups(result));
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onTestSuccess(org.testng.ITestResult)
+	 */
 	@Override
 	public void onTestSuccess(ITestResult result) {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onTestFailure(org.testng.ITestResult)
+	 */
 	@Override
 	public void onTestFailure(ITestResult result) {
 		Throwable t = result.getThrowable();
+		@SuppressWarnings("unused")
 		String cause = "";
 		if (t != null)
 			cause = t.getMessage();
@@ -105,18 +116,30 @@ public class ReportListener implements ITestListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onTestSkipped(org.testng.ITestResult)
+	 */
 	@Override
 	public void onTestSkipped(ITestResult result) {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onTestFailedButWithinSuccessPercentage(org.testng.ITestResult)
+	 */
 	@Override
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onStart(org.testng.ITestContext)
+	 */
 	@Override
 	public void onStart(ITestContext context) {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onFinish(org.testng.ITestContext)
+	 */
 	@Override
 	public void onFinish(ITestContext context) {
 		ExtentReportManager.getExtentReports().flush();

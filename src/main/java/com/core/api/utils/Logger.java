@@ -22,18 +22,35 @@ import com.core.api.constants.ResourceFile;
 
 import io.qameta.allure.Allure;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class Logger.
+ *
  * @author Pavan.DV
  * @since 1.0.0
  */
 public class Logger implements ILogger {
 
+	/** The request. */
 	private static Request request;
+	
+	/** The new line. */
 	static String NEW_LINE = System.lineSeparator();
+	
+	/** The format. */
 	private static String FORMAT = "%1$-15s%2$-20s%3$-50s";
+	
+	/** The format text. */
 	private static String FORMAT_TEXT = FORMAT + NEW_LINE;
+	
+	/** The suffix. */
 	static String suffix = "****************************************************************************************************";
 
+	/**
+	 * Log request.
+	 *
+	 * @param request the request
+	 */
 	public static void logRequest(Request request) {
 		Logger.request = request;
 		String prefix = NEW_LINE
@@ -54,6 +71,11 @@ public class Logger implements ILogger {
 		ReportUtil.logReqRes(Status.INFO, requestLog);
 	}
 
+	/**
+	 * Log response.
+	 *
+	 * @param response the response
+	 */
 	public static void logResponse(Response response) {
 		String prefix = NEW_LINE
 				+ "********************************************* Response *********************************************"
@@ -64,7 +86,7 @@ public class Logger implements ILogger {
 		builder.append(String.format(FORMAT_TEXT, "Status message", ":", response.getStatusLine().getStatusMessage()));
 		builder.append(String.format(FORMAT_TEXT, "Headers", ":", prettyMap(response.getHeaders())));
 		builder = appendBody(builder, response);
-		builder.append(String.format(FORMAT_TEXT, "Find the report using command", ":", "allure serve"));
+		builder.append(String.format(FORMAT_TEXT, "Find the report using command in project directory", ":", "allure serve"));
 		String responseLog = prefix + builder.toString() + suffix;
 		LOG.info(responseLog);
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
@@ -72,6 +94,12 @@ public class Logger implements ILogger {
 		ReportUtil.logReqRes(Status.PASS, responseLog);
 	}
 
+	/**
+	 * Pretty map.
+	 *
+	 * @param map the map
+	 * @return the string
+	 */
 	private static String prettyMap(Map<String, Object> map) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<Entry<String, Object>> iter = map.entrySet().iterator();
@@ -88,6 +116,13 @@ public class Logger implements ILogger {
 		return sb.toString().isEmpty() ? "<none>" : sb.toString();
 	}
 
+	/**
+	 * Append body.
+	 *
+	 * @param builder the builder
+	 * @param response the response
+	 * @return the string builder
+	 */
 	private static StringBuilder appendBody(StringBuilder builder, Response response) {
 		if (!String.valueOf(response.getStatusLine().getStatusCode()).startsWith("5")) {
 			try {
@@ -113,17 +148,30 @@ public class Logger implements ILogger {
 		return builder;
 	}
 
+	/**
+	 * Format end point.
+	 *
+	 * @return the string
+	 */
 	private static String formatEndPoint() {
 		return (request.getEndPoint() == null || request.getEndPoint().isEmpty()) ? "<none>"
 				: request.getEndPoint();
 	}
 
+	/**
+	 * Gets the request body.
+	 *
+	 * @return the request body
+	 */
 	private static String getRequestBody() {
 		return request.getContentType().contains("json") == true
 				? JavaUtil.prettyJson(JavaUtil.toJson(request.getBody()))
 				: JavaUtil.prettyXml(JavaUtil.toXml(request.getBody()));
 	}
 
+	/**
+	 * Log mail properties.
+	 */
 	public static void logMailProperties() {
 		String prefix = NEW_LINE
 				+ "********************************************* Mail Properties **********************************************"
@@ -146,6 +194,9 @@ public class Logger implements ILogger {
 		Reporter.log(JavaUtil.convertToHtml(prefix) + JavaUtil.convertToHtml(builder.toString()) + suffix);
 	}
 
+	/**
+	 * Log mail request.
+	 */
 	public static void logMailRequest() {
 		String prefix = NEW_LINE
 				+ "********************************************* Mail Request **********************************************"

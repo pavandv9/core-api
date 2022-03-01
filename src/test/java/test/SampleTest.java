@@ -14,22 +14,33 @@ import com.core.api.utils.ILogger;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SampleTest.
+ */
 @Listeners({MailListner.class})
 public class SampleTest implements ILogger {
 	
-	@Test(description = "Core API Test", invocationCount = 1)
+	/**
+	 * Req res api.
+	 */
+	@Test(description = "Core API Test")
 	public void reqResApi() {
-		Request httpRequest = new Request();
-		Response res =	httpRequest.addBaseUrl("https://reqres.in/api/users/2").addMethod(HttpMethod.GET).send();
+		Request request = new Request();
+		Response res =	request.addBaseUrl("https://reqres.in/api/users/2").addMethod(HttpMethod.GET).send();
 		assertEquals(res.getStatusCode(), 200);
 	}
 
+	/**
+	 * Using logger and endpoint.
+	 */
 	@Test(description = "Sample test case")
 	@Severity(SeverityLevel.MINOR)
-	public void test1() {
+	public void usingLoggerAndEndpoint() {
 		LOG.info("Using logger: test case 2");
-		Request httpRequest = new Request();
-		Response response = httpRequest.addBaseUrl("https://test-dummy-api.herokuapp.com").addMethod(HttpMethod.GET).send();
+		Request request = new Request();
+		Response response = request.addBaseUrl("https://reqres.in").addEndPoint("/api/users/2").addMethod(HttpMethod.GET).send();
 		assertEquals(response.getStatusCode(), 200, "Status not matching");
 	}
+
 }

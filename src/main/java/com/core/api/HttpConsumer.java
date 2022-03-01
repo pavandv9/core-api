@@ -43,63 +43,70 @@ import com.core.api.utils.PropertyUtil;
 
 import lombok.NonNull;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Pavan.DV
- * 
- * @since 1.0.0
+ * The Class HttpConsumer.
  *
+ * @author Pavan.DV
+ * @since 1.0.0
  */
 public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
-	private Request httpRequest;
+	/** The request. */
+	private Request request;
 
 	static {
 		clearFiles();
 	}
 
 	/**
-	 * Process HttpRequest
-	 * 
-	 * @param httpRequest
-	 * @return
+	 * Process Request.
+	 *
+	 * @return the response
 	 */
 	private Response processRequest() {
 		loadConfigFileAndValidateRequest();
-		Logger.logRequest(httpRequest);
+		Logger.logRequest(request);
 		CloseableHttpResponse closeableHttpResponse = null;
 		Response httpResponse = null;
 		try {
-			closeableHttpResponse = getDefaultClient().execute(getHttpUriRequest(httpRequest.getHttpMethod()));
+			closeableHttpResponse = getDefaultClient().execute(getHttpUriRequest(request.getHttpMethod()));
 			httpResponse = new AbstractResponse(closeableHttpResponse);
 			Logger.logResponse(httpResponse);
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 		return httpResponse;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.core.api.HttpClient#getHttpRequest()
+	 */
 	@Override
 	public Request getHttpRequest() {
-		return httpRequest;
+		return request;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.core.api.HttpClient#execute(com.core.api.Request)
+	 */
 	@Override
-	public Response execute(@NonNull Request httpRequest) {
-		this.httpRequest = httpRequest;
+	public Response execute(@NonNull Request request) {
+		this.request = request;
 		return processRequest();
 	}
 
 	/**
 	 * Get URI by building url, path parameters and query parameters.
-	 * 
-	 * @return
+	 *
+	 * @return the uri
 	 */
 	private URI URI() {
 		URI uri = null;
 		try {
 			URIBuilder uriBuilder = new URIBuilder(buildPathParams());
-			for (Entry<String, Object> entrySet : httpRequest.getQueryParams().entrySet()) {
+			for (Entry<String, Object> entrySet : request.getQueryParams().entrySet()) {
 				uriBuilder.setParameter(entrySet.getKey(), entrySet.getValue().toString());
 			}
 			uri = uriBuilder.build();
@@ -114,24 +121,24 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 	 */
 	private void loadConfigFileAndValidateRequest() {
 		loadConfig();
-		if (httpRequest.getHttpMethod() == null)
+		if (request.getHttpMethod() == null)
 			throw new HttpException("HttpMethod not found in the request");
 	}
 
 	/**
-	 * Build path parameter to url
-	 * 
-	 * @return
+	 * Build path parameter to url.
+	 *
+	 * @return the string
 	 */
 	private String buildPathParams() {
-		String endPointWithPathPrams = httpRequest.getEndPoint();
-		String url = httpRequest.getBaseUrl();
+		String endPointWithPathPrams = request.getEndPoint();
+		String url = request.getBaseUrl();
 		if (endPointWithPathPrams != null) {
-			for (Entry<String, Object> pathParam : httpRequest.getPathParams().entrySet()) {
+			for (Entry<String, Object> pathParam : request.getPathParams().entrySet()) {
 				String key = pathParam.getKey().replace("{", "").replace("}", "");
 				endPointWithPathPrams = endPointWithPathPrams.replace("{" + key + "}", pathParam.getValue().toString());
 			}
-			url = String.format("%1$s%2$s", httpRequest.getBaseUrl(), endPointWithPathPrams);
+			url = String.format("%1$s%2$s", request.getBaseUrl(), endPointWithPathPrams);
 		}
 		return url;
 	}
@@ -156,14 +163,20 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 
 	/**
 	 * Set headers to the request.
-	 * 
-	 * @param httpUriRequest
+	 *
+	 * @param httpUriRequest the new headers
 	 */
 	private void setHeaders(HttpUriRequest httpUriRequest) {
-		for (Entry<String, Object> entry : httpRequest.getHeaders().entrySet())
+		for (Entry<String, Object> entry : request.getHeaders().entrySet())
 			httpUriRequest.setHeader(entry.getKey(), entry.getValue().toString());
 	}
 
+	/**
+	 * Gets the http uri request.
+	 *
+	 * @param method the method
+	 * @return the http uri request
+	 */
 	private HttpUriRequest getHttpUriRequest(HttpMethod method) {
 		HttpUriRequest httpUriRequest = null;
 		switch (method) {
@@ -218,93 +231,121 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		return httpUriRequest;
 	}
 
+	/**
+	 * Load config.
+	 */
 	private void loadConfig() {
 		loadConfigProperties();
 		formatUrlAndEndPoint();
 		loadHeaders();
 	}
 
+	/**
+	 * Load config properties.
+	 */
 	private void loadConfigProperties() {
 		String env = "";
 		try {
-			env = ConfigManager.get(ConfigProperty.ENV);
+			if (null != ConfigManager.props) {
+				env = ConfigManager.get(ConfigProperty.ENV);
+				try {
+					PropertyUtil.loadProperties(
+							String.format("%1$s%2$s%3$s", "src/main/resources/env-file/", env, ".properties"));
+				} catch (HttpException e) {
+					if (null != env)
+						LOG.warn(env + ".properties not found, use it for better convince");
+				}
+			}
 		} catch (ExceptionInInitializerError e) {
-			LOG.warn("config.properties not found, use it for better performance");
+			LOG.warn("config.properties not found, use it for better convince");
 		}
-		try {
-			PropertyUtil
-					.loadProperties(String.format("%1$s%2$s%3$s", "src/main/resources/env-file/", env, ".properties"));
-		} catch (HttpException e) {
-			LOG.warn(env + ".properties not found, use it for better performance");
-		}
-		String baseUrl = httpRequest.getBaseUrl();
-		String authorization = httpRequest.getAuthorization();
+		String baseUrl = request.getBaseUrl();
+		String authorization = request.getAuthorization();
 		if (baseUrl == null || baseUrl.isEmpty()) {
 			try {
 				baseUrl = PropertyUtil.get(ConfigProperty.BASE_URL);
-				httpRequest.addBaseUrl(baseUrl);
+				request.addBaseUrl(baseUrl);
+			} catch (NullPointerException e) {
+				throw new HttpException("base_url is not found");
 			} catch (ExceptionInInitializerError e) {
 			}
 		}
-		if (httpRequest.getBaseUrl() == null || baseUrl.isEmpty())
-			throw new HttpException("base_url is not set");
+		if (request.getBaseUrl() == null || baseUrl.isEmpty())
+			throw new HttpException("base_url is not found");
 		if (baseUrl.contains("{") || baseUrl.contains("}"))
 			throw new HttpException("base_url is not valid");
 		if (authorization == null || authorization.isEmpty()) {
 			try {
 				authorization = PropertyUtil.get(ConfigProperty.AUTHORIZATION);
 				if (authorization != null && !authorization.isEmpty())
-					httpRequest.addAuthorization(authorization);
+					request.addAuthorization(authorization);
 			} catch (ExceptionInInitializerError | NullPointerException e) {
 			}
 		}
 	}
 
+	/**
+	 * Format url and end point.
+	 */
 	private void formatUrlAndEndPoint() {
-		if (httpRequest.getEndPoint() == null || httpRequest.getEndPoint().isEmpty()) {
-			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
-		} else if (httpRequest.getBaseUrl().endsWith("/") && httpRequest.getEndPoint().startsWith("/")) {
-			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
-			httpRequest.addEndPoint(httpRequest.getEndPoint().substring(1));
-		} else if (httpRequest.getBaseUrl().endsWith("/") && !httpRequest.getEndPoint().startsWith("/")) {
-			httpRequest.addBaseUrl(httpRequest.getBaseUrl());
-			httpRequest.addEndPoint(httpRequest.getEndPoint());
-		} else if (!httpRequest.getBaseUrl().endsWith("/") && httpRequest.getEndPoint().startsWith("/")) {
-			httpRequest.addBaseUrl(httpRequest.getBaseUrl() + "/");
-			httpRequest.addEndPoint(httpRequest.getEndPoint().substring(1));
+		if (request.getEndPoint() == null || request.getEndPoint().isEmpty()) {
+			request.addBaseUrl(request.getBaseUrl());
+		} else if (request.getBaseUrl().endsWith("/") && request.getEndPoint().startsWith("/")) {
+			request.addBaseUrl(request.getBaseUrl());
+			request.addEndPoint(request.getEndPoint().substring(1));
+		} else if (request.getBaseUrl().endsWith("/") && !request.getEndPoint().startsWith("/")) {
+			request.addBaseUrl(request.getBaseUrl());
+			request.addEndPoint(request.getEndPoint());
+		} else if (!request.getBaseUrl().endsWith("/") && request.getEndPoint().startsWith("/")) {
+			request.addBaseUrl(request.getBaseUrl() + "/");
+			request.addEndPoint(request.getEndPoint().substring(1));
 		} else {
-			httpRequest.addBaseUrl(httpRequest.getBaseUrl() + "/");
-			httpRequest.addEndPoint(httpRequest.getEndPoint());
+			request.addBaseUrl(request.getBaseUrl() + "/");
+			request.addEndPoint(request.getEndPoint());
 		}
 	}
 
+	/**
+	 * Load headers.
+	 */
 	private void loadHeaders() {
-		if (httpRequest.getHeaders().isEmpty()) {
-			httpRequest.addHeader(CONTENT_TYPE, APPLICATION_JSON);
-			httpRequest.addHeader(ACCEPT, APPLICATION_JSON);
+		if (request.getHeaders().isEmpty()) {
+			request.addHeader(CONTENT_TYPE, APPLICATION_JSON);
+			request.addHeader(ACCEPT, APPLICATION_JSON);
 		}
-		if (httpRequest.getContentType() == null || httpRequest.getContentType().isEmpty()) {
-			httpRequest.addHeader(CONTENT_TYPE, APPLICATION_JSON);
-			httpRequest.addHeader(ACCEPT, APPLICATION_JSON);
+		if (request.getContentType() == null || request.getContentType().isEmpty()) {
+			request.addHeader(CONTENT_TYPE, APPLICATION_JSON);
+			request.addHeader(ACCEPT, APPLICATION_JSON);
 		}
 	}
 
+	/**
+	 * Gets the http entity body.
+	 *
+	 * @return the http entity body
+	 */
 	private HttpEntity getHttpEntityBody() {
 		HttpEntity entity = null;
 		try {
-			entity = new StringEntity(JavaUtil.toJson(httpRequest.getBody()));
+			entity = new StringEntity(JavaUtil.toJson(request.getBody()));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return entity;
 	}
 
+	/**
+	 * Clear files.
+	 */
 	private static void clearFiles() {
-		cleareAllureResultsFiles();
-		cleareAllureReport();
+		clearAllureResultsFiles();
+		clearAllureReport();
 	}
 
-	private static void cleareAllureResultsFiles() {
+	/**
+	 * Clear allure results files.
+	 */
+	private static void clearAllureResultsFiles() {
 		try {
 			Arrays.stream(new File("allure-results").listFiles()).forEach(File::delete);
 			LOG.info("allure-results cleared from repository.");
@@ -312,7 +353,10 @@ public class HttpConsumer implements HttpClient, ILogger, IHeaders {
 		}
 	}
 
-	private static void cleareAllureReport() {
+	/**
+	 * Clear allure report.
+	 */
+	private static void clearAllureReport() {
 		try {
 			Arrays.stream(new File("allure-report").listFiles()).forEach(File::delete);
 			LOG.info("allure-report cleared from repository.");

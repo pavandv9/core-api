@@ -11,12 +11,21 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class JsonUtil.
+ *
  * @author Pavan.DV
  * @since 1.0.0
  */
 public class JsonUtil {
 
+	/**
+	 * Read json file.
+	 *
+	 * @param filePath the file path
+	 * @return the JSON array
+	 */
 	public static JSONArray readJsonFile(String filePath) {
 		JSONParser jsonParser = new JSONParser();
 		JSONArray jsonArray = null;
@@ -29,6 +38,12 @@ public class JsonUtil {
 		return jsonArray;
 	}
 
+	/**
+	 * Read json file.
+	 *
+	 * @param file the file
+	 * @return the JSON array
+	 */
 	public static JSONArray readJsonFile(File file) {
 		JSONParser jsonParser = new JSONParser();
 		JSONArray jsonArray = null;
