@@ -13,3 +13,6 @@ src/main/.DS_Store
 src/main/java/.DS_Store
 allure-report/
 .factorypath
+/bin/
+/build/
+.idea
