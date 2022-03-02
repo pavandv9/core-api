@@ -4,8 +4,7 @@
 ### API Automation Framework
 API Framework is developed using HttpClients for api handliing, SpringFramework for Database connection and sending Mail.
 ## Initial Setup
-1. Clone the core-api and import to any IDE `git clone https://github.com/pavandv9/core-api.git`.
-2. Create your testing maven project, add testng dependency, add below dependency and build it.
+1. Create your testing maven project, add testng dependency, add below dependency and build it.
 ``` maven
 <dependency>
 	<groupId>dv</groupId>
@@ -13,6 +12,8 @@ API Framework is developed using HttpClients for api handliing, SpringFramework 
 	<version>LATEST-VERSION</version>
 </dependency>
 ```
+2. For `gradle` project follow below link.
+
 ## Usage:
 
 #### For complete usage please refer link [Click Here](https://pavandv9.gitbook.io/automation/api-testing/api-automation-framework)
