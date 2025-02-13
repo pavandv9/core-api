@@ -47,7 +47,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<json.version>20190722</json.version>
 		<gson.version>2.8.9</gson.version>
-		<logback.verison>1.2.3</logback.verison>
+		<logback.verison>1.2.13</logback.verison>
 		<jsonpath.version>2.4.0</jsonpath.version>
 		<u.version>1.54</u.version>
 		<aspectj.version>1.9.5</aspectj.version>
